@@ -192,7 +192,8 @@
       opacity: 0;
       pointer-events: none;
     }
-    .cutscene img {
+    .cutscene img,
+    .cutscene video {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -200,19 +201,51 @@
       object-fit: contain;
       display: block;
       filter: grayscale(1) contrast(1.06);
+      transform: scale(1.02);
+      animation: inkPan 14s ease-in-out forwards;
+    }
+    .cutscene video {
+      display: none;
+    }
+    .cutscene.use-video img {
+      display: none;
+    }
+    .cutscene.use-video video {
+      display: block;
+    }
+    .cutscene.show img,
+    .cutscene.show video {
+      animation: inkPan 14s ease-in-out forwards;
+    }
+    .cutscene::before {
+      content: "";
+      position: absolute;
+      inset: -10%;
+      z-index: 1;
+      pointer-events: none;
+      opacity: 0.34;
+      background:
+        radial-gradient(circle at 16% 72%, rgba(255,255,255,0.18), transparent 10%),
+        radial-gradient(circle at 72% 18%, rgba(255,255,255,0.12), transparent 12%),
+        radial-gradient(circle at 50% 48%, rgba(0,0,0,0.28), transparent 18%),
+        repeating-linear-gradient(115deg, transparent 0 28px, rgba(255,255,255,0.035) 28px 30px);
+      mix-blend-mode: screen;
+      animation: inkMist 18s linear infinite;
     }
     .cutscene::after {
       content: "";
       position: absolute;
       inset: 0;
+      z-index: 2;
       background:
-        linear-gradient(180deg, rgba(0,0,0,0.06), transparent 28%, rgba(0,0,0,0.58)),
-        radial-gradient(circle at 50% 42%, transparent 0 46%, rgba(0,0,0,0.38) 100%);
+        linear-gradient(180deg, rgba(0,0,0,0.18), transparent 24%, rgba(0,0,0,0.72)),
+        radial-gradient(circle at 50% 42%, transparent 0 42%, rgba(0,0,0,0.44) 100%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0 1px, transparent 1px 5px);
       pointer-events: none;
     }
     .cutscene-copy {
       position: relative;
-      z-index: 1;
+      z-index: 3;
       align-self: end;
       width: min(760px, calc(100% - 34px));
       margin: 0 0 clamp(34px, 8vh, 84px);
@@ -221,6 +254,9 @@
       text-align: center;
       text-shadow: 0 3px 16px rgba(0,0,0,0.86);
       background: linear-gradient(180deg, transparent, rgba(0,0,0,0.18));
+      opacity: 0;
+      transform: translateY(14px);
+      animation: textRise 1.8s ease 0.45s forwards;
     }
     .cutscene-kicker {
       margin: 0 0 8px;
@@ -250,6 +286,23 @@
       font-size: 0.95rem;
       font-weight: 800;
       letter-spacing: 0.08em;
+      animation: hintPulse 2.4s ease-in-out infinite;
+    }
+    @keyframes inkPan {
+      0% { transform: scale(1.02) translate3d(0, 0, 0); filter: grayscale(1) contrast(1.02) brightness(0.92); }
+      100% { transform: scale(1.085) translate3d(-0.8%, -0.6%, 0); filter: grayscale(1) contrast(1.12) brightness(1); }
+    }
+    @keyframes inkMist {
+      0% { transform: translate3d(-2%, 0, 0) scale(1); }
+      50% { transform: translate3d(2%, -1%, 0) scale(1.04); }
+      100% { transform: translate3d(-2%, 0, 0) scale(1); }
+    }
+    @keyframes textRise {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes hintPulse {
+      0%, 100% { opacity: 0.52; }
+      50% { opacity: 0.92; }
     }
     .dialog {
       width: min(960px, 100%);
@@ -429,6 +482,7 @@
 
   <div class="cutscene" id="cutscene" aria-label="結局過場動畫">
     <img id="cutsceneImage" src="四印歸一.png" alt="">
+    <video id="cutsceneVideo" muted playsinline loop preload="auto"></video>
     <div class="cutscene-copy">
       <p class="cutscene-kicker" id="cutsceneKicker">《四印之後》</p>
       <h2 class="cutscene-title" id="cutsceneTitle">四印歸一</h2>
@@ -478,6 +532,7 @@
       cover: document.getElementById("cover"),
       cutscene: document.getElementById("cutscene"),
       cutsceneImage: document.getElementById("cutsceneImage"),
+      cutsceneVideo: document.getElementById("cutsceneVideo"),
       cutsceneTitle: document.getElementById("cutsceneTitle"),
       cutsceneText: document.getElementById("cutsceneText"),
       cutsceneHint: document.getElementById("cutsceneHint"),
@@ -499,32 +554,33 @@
     let pendingCutscene = null;
     let audioCtx = null;
     let audioGain = null;
-    let audioOsc = null;
+    let musicNodes = null;
+    let chimeTimer = 0;
     let narratorVoice = null;
 
     const cutscenes = [
       {
-        image: "四印歸一.png",
+        video: "四印歸一.mp4",
         title: "四印歸一",
         text: "尋遍千山萬水，\n終於來到答案之前。\n而答案，從來不在門後。"
       },
       {
-        image: "萬詩之境.png",
+        video: "萬詩之境.mp4",
         title: "萬詩之境",
         text: "那些曾被誦讀的文字，\n從未沉睡。\n它們只是等待，\n下一位同行的人。"
       },
       {
-        image: "詩魂長河.png",
+        video: "詩魂長河.mp4",
         title: "詩魂長河",
         text: "人會遠去，\n山河也會改變。\n唯有留下的心意，\n仍在歲月之中迴響。"
       },
       {
-        image: "新的旅人.png",
+        video: "新的旅人.mp4",
         title: "新的旅人",
         text: "故事沒有結束。\n只是有人抵達，\n有人出發。"
       },
       {
-        image: "群山之外.png",
+        video: "群山之外.mp4",
         title: "群山之外",
         text: "山外仍有山，\n詩外仍有詩。\n\n而你的故事，\n將在下一頁繼續。"
       }
@@ -572,23 +628,85 @@
         const AudioContextClass = window.AudioContext || window.webkitAudioContext;
         audioCtx = new AudioContextClass();
         audioGain = audioCtx.createGain();
-        audioOsc = audioCtx.createOscillator();
-        audioOsc.type = "sine";
-        audioOsc.frequency.value = 146.83;
         audioGain.gain.value = 0;
-        audioOsc.connect(audioGain);
         audioGain.connect(audioCtx.destination);
-        audioOsc.start();
       }
       if (audioCtx.state === "suspended") audioCtx.resume();
+      if (!musicNodes) musicNodes = createInkMusic();
       audioGain.gain.cancelScheduledValues(audioCtx.currentTime);
-      audioGain.gain.setTargetAtTime(0.045, audioCtx.currentTime, 1.4);
+      audioGain.gain.setTargetAtTime(0.08, audioCtx.currentTime, 1.6);
+      scheduleChimes();
+    }
+
+    function createInkMusic() {
+      const droneFilter = audioCtx.createBiquadFilter();
+      droneFilter.type = "lowpass";
+      droneFilter.frequency.value = 580;
+      droneFilter.Q.value = 0.45;
+      droneFilter.connect(audioGain);
+
+      const low = audioCtx.createOscillator();
+      const fifth = audioCtx.createOscillator();
+      const air = audioCtx.createOscillator();
+      const lowGain = audioCtx.createGain();
+      const fifthGain = audioCtx.createGain();
+      const airGain = audioCtx.createGain();
+
+      low.type = "sine";
+      low.frequency.value = 73.42;
+      fifth.type = "triangle";
+      fifth.frequency.value = 110;
+      air.type = "sine";
+      air.frequency.value = 220;
+      lowGain.gain.value = 0.32;
+      fifthGain.gain.value = 0.08;
+      airGain.gain.value = 0.018;
+
+      low.connect(lowGain);
+      fifth.connect(fifthGain);
+      air.connect(airGain);
+      lowGain.connect(droneFilter);
+      fifthGain.connect(droneFilter);
+      airGain.connect(audioGain);
+      low.start();
+      fifth.start();
+      air.start();
+
+      return { low, fifth, air, lowGain, fifthGain, airGain, droneFilter };
+    }
+
+    function scheduleChimes() {
+      if (!audioCtx || chimeTimer) return;
+      const scale = [196, 220, 261.63, 293.66, 329.63];
+      chimeTimer = window.setInterval(() => {
+        if (!audioCtx || !audioGain || audioGain.gain.value < 0.005) return;
+        const now = audioCtx.currentTime;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const filter = audioCtx.createBiquadFilter();
+        osc.type = "sine";
+        osc.frequency.value = scale[Math.floor(Math.random() * scale.length)];
+        filter.type = "lowpass";
+        filter.frequency.value = 1200;
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.035, now + 0.08);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 2.4);
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioGain);
+        osc.start(now);
+        osc.stop(now + 2.5);
+      }, 4200);
     }
 
     function fadeEndingMusic() {
       if (!audioCtx || !audioGain) return;
       audioGain.gain.cancelScheduledValues(audioCtx.currentTime);
-      audioGain.gain.setTargetAtTime(0, audioCtx.currentTime, 1.8);
+      audioGain.gain.setTargetAtTime(0, audioCtx.currentTime, 2.3);
+      if (chimeTimer) {
+        window.clearInterval(chimeTimer);
+        chimeTimer = 0;
+      }
     }
 
     function pickNarratorVoice() {
@@ -621,8 +739,22 @@
       const scene = cutscenes[index];
       pendingCutscene = nextAction;
       startEndingMusic();
-      els.cutsceneImage.src = scene.image;
-      els.cutsceneImage.alt = scene.title;
+      els.cutscene.classList.toggle("use-video", Boolean(scene.video));
+      if (scene.video) {
+        els.cutsceneVideo.src = scene.video;
+        els.cutsceneVideo.currentTime = 0;
+        els.cutsceneVideo.style.animation = "none";
+        void els.cutsceneVideo.offsetWidth;
+        els.cutsceneVideo.style.animation = "";
+        els.cutsceneVideo.play().catch(() => {});
+      } else {
+        els.cutsceneVideo.pause();
+        els.cutsceneImage.src = scene.image;
+        els.cutsceneImage.alt = scene.title;
+        els.cutsceneImage.style.animation = "none";
+        void els.cutsceneImage.offsetWidth;
+        els.cutsceneImage.style.animation = "";
+      }
       els.cutsceneTitle.textContent = scene.title;
       els.cutsceneText.textContent = scene.text;
       els.cutsceneHint.textContent = index === 4 ? "點擊，開啟中央大門" : "點擊，進入下一幕";
@@ -639,6 +771,7 @@
       els.cutscene.classList.add("fade");
       setTimeout(() => {
         els.cutscene.classList.remove("show", "fade");
+        els.cutsceneVideo.pause();
         if (action.type === "gate") {
           openGate();
         } else {
@@ -748,7 +881,10 @@
       const totalSeconds = Math.floor(elapsed / 1000);
       const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
       const seconds = String(totalSeconds % 60).padStart(2, "0");
-      els.timeText.textContent = `【冒險完成】\n總冒險時長：${minutes} 分 ${seconds} 秒`;
+      els.timeText.textContent = `【冒險完成】\n總冒險時長：${minutes} 分 ${seconds} 秒\n即將前往任務完成轉蛋機。`;
+      setTimeout(() => {
+        window.location.href = "任務完成轉蛋機/index.html";
+      }, 1400);
     }
 
     function clearProgress(clearSession) {
