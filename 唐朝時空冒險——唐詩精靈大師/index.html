@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>唐朝時空冒險——唐詩精靈大師</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --ink: #231b14;
+      --paper: #fff8df;
+      --gold: #f5b642;
+      --jade: #1f9d7a;
+      --red: #d44d3a;
+      --night: #132038;
+      --purple: #6b4aa8;
+      --line: rgba(58, 36, 18, 0.18);
+      --shadow: rgba(23, 17, 12, 0.24);
+    }
+
+    html,
+    body {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 15% 12%, rgba(245, 182, 66, 0.34), transparent 16rem),
+        radial-gradient(circle at 86% 18%, rgba(31, 157, 122, 0.28), transparent 18rem),
+        linear-gradient(135deg, #1d2d4c 0%, #1d1634 52%, #392116 100%);
+      min-height: 100vh;
+    }
+
+    button {
+      color: inherit;
+      font: inherit;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .topbar {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      color: #fff8df;
+    }
+
+    .title h1 {
+      margin: 0;
+      font-size: clamp(1.65rem, 4vw, 3.45rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+      text-shadow: 0 3px 0 rgba(40, 22, 10, 0.58), 0 16px 30px rgba(0, 0, 0, 0.32);
+    }
+
+    .title p {
+      margin: 6px 0 0;
+      color: rgba(255, 248, 223, 0.86);
+      font-weight: 900;
+      font-size: clamp(0.92rem, 2vw, 1.08rem);
+    }
+
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: end;
+    }
+
+    .stat {
+      min-width: 92px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255, 248, 223, 0.18);
+      border-radius: 8px;
+      color: #fff8df;
+      background: rgba(8, 13, 25, 0.58);
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.16);
+      font-weight: 950;
+      text-align: center;
+    }
+
+    .stage {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 320px;
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .scene,
+    .side {
+      border: 1px solid rgba(255, 241, 190, 0.18);
+      border-radius: 8px;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.24);
+      overflow: hidden;
+    }
+
+    .scene {
+      position: relative;
+      min-height: 620px;
+      display: grid;
+      grid-template-rows: 260px 1fr;
+      background: var(--paper);
+    }
+
+    .art {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(13, 23, 45, 0.06), rgba(13, 23, 45, 0.46)),
+        linear-gradient(135deg, #8ed0dc 0%, #f8d98b 48%, #c17451 100%);
+    }
+
+    .sun {
+      position: absolute;
+      width: 96px;
+      height: 96px;
+      border-radius: 999px;
+      right: 68px;
+      top: 38px;
+      background: #fff1a8;
+      box-shadow: 0 0 42px rgba(255, 240, 130, 0.9);
+    }
+
+    .mountains,
+    .palace,
+    .rift,
+    .river {
+      position: absolute;
+      inset: auto 0 0;
+      pointer-events: none;
+    }
+
+    .mountains {
+      height: 145px;
+      background:
+        linear-gradient(135deg, transparent 0 16%, rgba(54, 76, 92, 0.92) 16% 31%, transparent 31%),
+        linear-gradient(45deg, transparent 0 21%, rgba(47, 64, 91, 0.84) 21% 43%, transparent 43%),
+        linear-gradient(135deg, transparent 0 54%, rgba(73, 85, 93, 0.76) 54% 72%, transparent 72%);
+      opacity: 0.9;
+    }
+
+    .palace {
+      left: 8%;
+      width: 45%;
+      height: 94px;
+      background:
+        linear-gradient(90deg, transparent 0 8%, #7c3d28 8% 12%, transparent 12% 88%, #7c3d28 88% 92%, transparent 92%),
+        linear-gradient(180deg, #f1c45d 0 18%, #8b3526 18% 26%, #e9a84d 26% 100%);
+      clip-path: polygon(0 36%, 10% 36%, 13% 18%, 26% 31%, 38% 14%, 50% 32%, 62% 14%, 74% 31%, 87% 18%, 90% 36%, 100% 36%, 94% 50%, 92% 100%, 8% 100%, 6% 50%);
+      filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.22));
+    }
+
+    .rift {
+      left: auto;
+      right: 10%;
+      bottom: 24px;
+      width: 148px;
+      height: 188px;
+      border-radius: 48% 52% 45% 55%;
+      background:
+        radial-gradient(circle, rgba(255, 255, 255, 0.96) 0 8%, rgba(148, 232, 255, 0.86) 8% 22%, rgba(108, 74, 168, 0.75) 22% 42%, transparent 43%),
+        conic-gradient(from 20deg, #ffe97d, #72e0ff, #6b4aa8, #ef6b74, #ffe97d);
+      box-shadow: 0 0 34px rgba(118, 214, 255, 0.8), inset 0 0 30px rgba(255, 255, 255, 0.78);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+
+    .river {
+      height: 54px;
+      background:
+        repeating-linear-gradient(100deg, rgba(255, 255, 255, 0.34) 0 16px, transparent 16px 42px),
+        linear-gradient(90deg, #2f8eb2, #84d8df, #2f8eb2);
+      opacity: 0.86;
+    }
+
+    .content {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      padding: 18px;
+    }
+
+    .badge {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: #fff8df;
+      background: var(--night);
+      font-weight: 950;
+    }
+
+    .story {
+      margin: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff1bb;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+
+    .question {
+      display: grid;
+      gap: 12px;
+    }
+
+    .question h2 {
+      margin: 0;
+      font-size: clamp(1.45rem, 3vw, 2.15rem);
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: rgba(35, 27, 20, 0.74);
+      font-weight: 900;
+    }
+
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .answer {
+      min-height: 76px;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid rgba(42, 30, 18, 0.16);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(99, 183, 232, 0.14), rgba(255, 250, 240, 0.92)),
+        #fffaf0;
+      cursor: pointer;
+      font-weight: 950;
+      text-align: left;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: inset 0 0 18px rgba(99, 183, 232, 0.12), 0 0 18px rgba(99, 183, 232, 0.08);
+    }
+
+    .answer:hover:not(:disabled),
+    .answer:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(31, 157, 122, 0.72);
+      box-shadow: 0 10px 22px rgba(31, 157, 122, 0.15);
+      outline: none;
+    }
+
+    .answer:disabled {
+      cursor: default;
+      opacity: 0.64;
+    }
+
+    .answer.hide {
+      visibility: hidden;
+    }
+    body.success-flash::before,
+    body.alarm-flash::before,
+    body.shop-flash::before,
+    body.boss-flash::before,
+    body.game-over-effect::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 18;
+      pointer-events: none;
+    }
+    body.success-flash::before {
+      background: radial-gradient(circle, rgba(255, 222, 93, 0.72), transparent 62%);
+      animation: flashOut 0.62s ease forwards;
+    }
+    body.alarm-flash::before {
+      background: rgba(212, 77, 58, 0.3);
+      animation: alarmBlink 0.48s linear 2 forwards;
+    }
+    body.shop-flash::before {
+      background: radial-gradient(circle at 50% 55%, rgba(99, 183, 232, 0.34), transparent 56%);
+      animation: flashOut 0.85s ease forwards;
+    }
+    body.boss-flash::before {
+      background: linear-gradient(180deg, rgba(0,0,0,0.72) 0 11%, transparent 11% 89%, rgba(0,0,0,0.72) 89% 100%), rgba(212, 77, 58, 0.16);
+      animation: alarmBlink 0.6s linear 2 forwards;
+    }
+    body.game-over-effect .app {
+      animation: gameOverShake 0.3s linear, slowFade 1.35s ease 0.3s forwards;
+    }
+
+    .key {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: #fff8df;
+      background: var(--purple);
+    }
+
+    .feedback {
+      min-height: 74px;
+      padding: 13px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #f7ead0;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .primary,
+    .ghost,
+    .tool {
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 950;
+    }
+
+    .primary {
+      color: #fff8df;
+      background: var(--jade);
+      box-shadow: 0 10px 20px rgba(31, 157, 122, 0.2);
+    }
+
+    .ghost {
+      color: #fff8df;
+      background: #513b83;
+    }
+
+    .tool {
+      color: var(--ink);
+      background: #ffd45f;
+    }
+
+    .primary:disabled,
+    .ghost:disabled,
+    .tool:disabled {
+      opacity: 0.48;
+      cursor: not-allowed;
+    }
+
+    .side {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background: rgba(255, 248, 223, 0.94);
+    }
+
+    .panel {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 1.08rem;
+      letter-spacing: 0;
+    }
+
+    .map {
+      display: grid;
+      gap: 8px;
+    }
+
+    .map-step {
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffaf0;
+      font-weight: 900;
+      color: rgba(35, 27, 20, 0.68);
+    }
+
+    .map-step.active {
+      color: #fff8df;
+      background: #1f735e;
+      border-color: transparent;
+    }
+
+    .spirits {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-content: start;
+    }
+
+    .spirit {
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: #fff8df;
+      background: #52335e;
+      font-weight: 950;
+    }
+
+    .empty {
+      color: rgba(35, 27, 20, 0.58);
+      font-weight: 850;
+    }
+
+    .bossbox {
+      padding: 14px;
+      background: #22162f;
+      color: #fff8df;
+    }
+
+    .hpbar {
+      height: 18px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .hpfill {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #ffce4a, #ef5a4d);
+      transition: width 0.25s ease;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(7, 9, 16, 0.72);
+    }
+
+    .modal.show {
+      display: grid;
+    }
+
+    .dialog {
+      width: min(560px, 100%);
+      padding: 20px;
+      border-radius: 8px;
+      background: #fff8df;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+    }
+
+    .dialog h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.55rem, 5vw, 2.35rem);
+      letter-spacing: 0;
+    }
+
+    .dialog p {
+      margin: 0 0 14px;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+
+    .shop-list {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .shop-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff0c2;
+    }
+
+    .shop-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        transform: scale(1) rotate(-3deg);
+      }
+
+      50% {
+        transform: scale(1.06) rotate(4deg);
+      }
+    }
+    @keyframes flashOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes alarmBlink {
+      0%, 100% { opacity: 0; }
+      20%, 70% { opacity: 1; }
+    }
+    @keyframes gameOverShake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-10px, 4px); }
+      40% { transform: translate(9px, -5px); }
+      60% { transform: translate(-7px, -3px); }
+      80% { transform: translate(6px, 4px); }
+    }
+    @keyframes slowFade {
+      to { opacity: 0.18; filter: blur(2px) saturate(0.7); }
+    }
+
+    @media (max-width: 900px) {
+      .topbar,
+      .stage {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        justify-content: start;
+      }
+
+      .scene {
+        min-height: auto;
+        grid-template-rows: 210px 1fr;
+      }
+
+      .side {
+        grid-template-rows: auto;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app {
+        padding: 10px;
+      }
+
+      .answers {
+        grid-template-columns: 1fr;
+      }
+
+      .answer {
+        min-height: 64px;
+      }
+
+      .palace {
+        width: 62%;
+      }
+
+      .rift {
+        right: 4%;
+        width: 110px;
+        height: 148px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="title">
+        <h1>唐朝時空冒險——唐詩精靈大師</h1>
+        <p>召喚詩人精靈，修復被打亂的唐詩時空！</p>
+      </div>
+      <div class="stats" aria-live="polite">
+        <div class="stat" id="hearts">心心心</div>
+        <div class="stat" id="coins">金幣 0</div>
+        <div class="stat" id="questionCount">第 1 題</div>
+      </div>
+    </header>
+
+    <section class="stage">
+      <section class="scene" aria-label="唐朝冒險遊戲區">
+        <div class="art" aria-hidden="true">
+          <div class="sun"></div>
+          <div class="mountains"></div>
+          <div class="palace"></div>
+          <div class="rift"></div>
+          <div class="river"></div>
+        </div>
+
+        <div class="content">
+          <span class="badge" id="zoneBadge">新手村：尋找遺落的詩句</span>
+          <p class="story" id="storyText">歡迎來到「唐朝時空裂縫」！這裡的唐詩被時空惡魔打亂了，詩人們都忘記了自己寫過什麼詩。你現在是一位「時空召喚師」，必須回答正確的唐詩密碼，幫助李白、杜甫、王維等大詩人找回記憶！</p>
+
+          <div class="question">
+            <div class="meta" id="questionMeta"></div>
+            <h2 id="questionText"></h2>
+            <div class="answers" id="answers"></div>
+          </div>
+
+          <div class="feedback" id="feedback">準備好了嗎？第一道唐詩密碼正在閃閃發光。</div>
+
+          <div class="controls">
+            <button class="primary" id="nextBtn" type="button" disabled>下一題</button>
+            <button class="tool" id="removeBtn" type="button">使用神筆馬良</button>
+            <button class="tool" id="hintBtn" type="button">使用時空沙漏</button>
+            <button class="ghost" id="restartBtn" type="button">重新開始</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="冒險狀態">
+        <div class="panel">
+          <h3>冒險地圖</h3>
+          <div class="map" id="map"></div>
+        </div>
+        <div class="panel">
+          <h3>已收服唐詩精靈</h3>
+          <div class="spirits" id="spirits"><span class="empty">還沒有夥伴，快去喚醒第一位詩人！</span></div>
+        </div>
+        <div class="bossbox">
+          <h3>時空惡魔 HP <span id="bossHpText">50/50</span></h3>
+          <div class="hpbar"><div class="hpfill" id="bossHpFill"></div></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal show" id="startModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>時空召喚師，出發！</h2>
+      <p>歡迎來到「唐朝時空裂縫」！唐詩記憶碎片正在長安上空亂飛。你有 3 顆心與 0 枚唐朝金幣，答對得 10 金幣，答錯扣 1 顆心。收服詩人精靈，最後一起挑戰時空惡魔吧！</p>
+      <button class="primary" id="startBtn" type="button">開始冒險</button>
+    </div>
+  </div>
+
+  <div class="modal" id="shopModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>長安雜貨店</h2>
+      <p id="shopIntro">掌櫃拍了拍算盤：「客官，買點神奇道具再上路吧！」</p>
+      <div class="shop-list">
+        <div class="shop-item">
+          <div>
+            <strong>神筆馬良 50 金幣</strong>
+            刪除一個錯誤選項，危急時超好用。
+          </div>
+          <button class="tool" data-buy="remove" type="button">購買</button>
+        </div>
+        <div class="shop-item">
+          <div>
+            <strong>時空沙漏 50 金幣</strong>
+            顯示正確答案提示，讓詩句偷偷眨眼。
+          </div>
+          <button class="tool" data-buy="hint" type="button">購買</button>
+        </div>
+        <div class="shop-item" id="reviveRow">
+          <div>
+            <strong>愛心復活 20 金幣</strong>
+            心心歸零時可買 1 顆心繼續挑戰。
+          </div>
+          <button class="tool" data-buy="revive" type="button">購買</button>
+        </div>
+      </div>
+      <button class="primary" id="leaveShopBtn" type="button">離開商店</button>
+    </div>
+  </div>
+
+  <div class="modal" id="endModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>Game Over</h2>
+      <p id="endText"></p>
+      <button class="primary" id="restartEndBtn" type="button">重新開始</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      { author: "李白", poem: "靜夜思", level: "易", q: "「床前明月光」的下一句是？", options: ["疑是地上霜", "白日依山盡", "春眠不覺曉", "粒粒皆辛苦"], answer: 0 },
+      { author: "孟浩然", poem: "春曉", level: "易", q: "「春眠不覺曉」的下一句是？", options: ["處處聞啼鳥", "疑是地上霜", "低頭思故鄉", "春風花草香"], answer: 0 },
+      { author: "王之渙", poem: "登鸛雀樓", level: "易", q: "「白日依山盡」的下一句是？", options: ["黃河入海流", "更上一層樓", "孤帆遠影碧空盡", "江雪夜歸人"], answer: 0 },
+      { author: "李紳", poem: "憫農", level: "易", q: "「誰知盤中飧」的下一句是？", options: ["粒粒皆辛苦", "處處聞啼鳥", "復照青苔上", "千山鳥飛絕"], answer: 0 },
+      { author: "駱賓王", poem: "詠鵝", level: "易", q: "「白毛浮綠水」的下一句是？", options: ["紅掌撥清波", "曲項向天歌", "花落知多少", "低頭思故鄉"], answer: 0 },
+      { author: "王維", poem: "鹿柴", level: "中", q: "「空山不見人」的下一句是？", options: ["但聞人語響", "返景入深林", "明月來相照", "獨坐幽篁裡"], answer: 0 },
+      { author: "杜甫", poem: "春夜喜雨", level: "中", q: "「好雨知時節」的下一句是？", options: ["當春乃發生", "潤物細無聲", "花重錦官城", "野徑雲俱黑"], answer: 0 },
+      { author: "王昌齡", poem: "出塞", level: "中", q: "「秦時明月漢時關」的下一句是？", options: ["萬里長征人未還", "不破樓蘭終不還", "黃沙百戰穿金甲", "一片冰心在玉壺"], answer: 0 },
+      { author: "柳宗元", poem: "江雪", level: "中", q: "「千山鳥飛絕」的下一句是？", options: ["萬徑人蹤滅", "孤舟蓑笠翁", "獨釣寒江雪", "日暮蒼山遠"], answer: 0 },
+      { author: "賀知章", poem: "詠柳", level: "中", q: "「碧玉妝成一樹高」的下一句是？", options: ["萬條垂下綠絲絛", "二月春風似剪刀", "不知細葉誰裁出", "春風不度玉門關"], answer: 0 },
+      { author: "杜牧", poem: "山行", level: "中", q: "「停車坐愛楓林晚」的下一句是？", options: ["霜葉紅於二月花", "牧童遙指杏花村", "南朝四百八十寺", "煙花三月下揚州"], answer: 0 },
+      { author: "李白", poem: "黃鶴樓送孟浩然之廣陵", level: "中", q: "「孤帆遠影碧空盡」的下一句是？", options: ["唯見長江天際流", "煙花三月下揚州", "桃花潭水深千尺", "疑是銀河落九天"], answer: 0 },
+      { author: "杜甫", poem: "絕句", level: "中", q: "「兩個黃鸝鳴翠柳」的下一句是？", options: ["一行白鷺上青天", "窗含西嶺千秋雪", "門泊東吳萬里船", "泥融飛燕子"], answer: 0 },
+      { author: "王維", poem: "九月九日憶山東兄弟", level: "中", q: "「獨在異鄉為異客」的下一句是？", options: ["每逢佳節倍思親", "遙知兄弟登高處", "遍插茱萸少一人", "勸君更盡一杯酒"], answer: 0 },
+      { author: "白居易", poem: "賦得古原草送別", level: "中", q: "「野火燒不盡」的下一句是？", options: ["春風吹又生", "離離原上草", "遠芳侵古道", "晴翠接荒城"], answer: 0 },
+      { author: "王勃", poem: "送杜少府之任蜀州", level: "難", q: "「海內存知己」的下一句是？", options: ["天涯若比鄰", "無為在歧路", "兒女共沾巾", "城闕輔三秦"], answer: 0 },
+      { author: "王翰", poem: "涼州詞", level: "難", q: "「葡萄美酒夜光杯」的下一句是？", options: ["欲飲琵琶馬上催", "醉臥沙場君莫笑", "古來征戰幾人回", "春風不度玉門關"], answer: 0 },
+      { author: "岑參", poem: "白雪歌送武判官歸京", level: "難", q: "「忽如一夜春風來」的下一句是？", options: ["千樹萬樹梨花開", "瀚海闌干百丈冰", "中軍置酒飲歸客", "北風捲地白草折"], answer: 0 },
+      { author: "劉禹錫", poem: "烏衣巷", level: "難", q: "「舊時王謝堂前燕」的下一句是？", options: ["飛入尋常百姓家", "朱雀橋邊野草花", "烏衣巷口夕陽斜", "東邊日出西邊雨"], answer: 0 },
+      { author: "李商隱", poem: "夜雨寄北", level: "難", q: "「何當共剪西窗燭」的下一句是？", options: ["卻話巴山夜雨時", "君問歸期未有期", "巴山夜雨漲秋池", "春蠶到死絲方盡"], answer: 0 },
+      { author: "張繼", poem: "楓橋夜泊", level: "進階", q: "Boss 戰！「姑蘇城外寒山寺」的下一句是？", options: ["夜半鐘聲到客船", "月落烏啼霜滿天", "江楓漁火對愁眠", "姑蘇台上烏棲時"], answer: 0 },
+      { author: "孟郊", poem: "遊子吟", level: "進階", q: "Boss 戰！「誰言寸草心」的下一句是？", options: ["報得三春暉", "慈母手中線", "遊子身上衣", "臨行密密縫"], answer: 0 },
+      { author: "高適", poem: "別董大", level: "進階", q: "Boss 戰！「莫愁前路無知己」的下一句是？", options: ["天下誰人不識君", "千里黃雲白日曛", "北風吹雁雪紛紛", "丈夫貧賤應未足"], answer: 0 },
+      { author: "杜甫", poem: "望岳", level: "進階", q: "Boss 戰！「會當凌絕頂」的下一句是？", options: ["一覽眾山小", "造化鐘神秀", "陰陽割昏曉", "決眥入歸鳥"], answer: 0 },
+      { author: "李白", poem: "望廬山瀑布", level: "進階", q: "Boss 戰！「飛流直下三千尺」的下一句是？", options: ["疑是銀河落九天", "日照香爐生紫煙", "遙看瀑布掛前川", "桃花潭水深千尺"], answer: 0 }
+    ];
+
+    const zones = [
+      { name: "新手村：尋找遺落的詩句", from: 0, to: 4 },
+      { name: "迷霧森林：詩人的低語", from: 5, to: 9 },
+      { name: "長安城：詩詞大亂鬥", from: 10, to: 14 },
+      { name: "時空裂縫：詩人的終極試煉", from: 15, to: 19 },
+      { name: "終極 Boss 戰：時空惡魔的考驗", from: 20, to: 24 }
+    ];
+
+    const powers = {
+      "李白": "酒劍仙之術",
+      "杜甫": "草堂守護盾",
+      "王維": "山水靜心光",
+      "孟浩然": "春曉喚鳥令",
+      "王之渙": "登樓破雲掌",
+      "李紳": "憫農金穗雨",
+      "駱賓王": "白鵝清波踢",
+      "王昌齡": "邊塞明月弓",
+      "柳宗元": "寒江雪影釣",
+      "賀知章": "二月春風剪",
+      "杜牧": "楓林火焰步",
+      "白居易": "古原春風咒",
+      "王勃": "天涯比鄰門",
+      "王翰": "夜光杯衝鋒",
+      "岑參": "梨花飛雪陣",
+      "劉禹錫": "烏衣燕影閃",
+      "李商隱": "西窗燭光術",
+      "張繼": "寒山鐘聲波",
+      "孟郊": "三春暉暖光",
+      "高適": "知己千里令"
+    };
+
+    const taunts = {
+      "李白": "李白揉了揉眼睛說：「這不是我寫的啦，我都急得要拔劍了！」",
+      "杜甫": "杜甫皺眉摸鬍子：「國破山河還在，但這個答案不在啊！」",
+      "王維": "王維輕輕敲木魚：「空山很安靜，錯誤答案卻很響。」",
+      "孟浩然": "孟浩然打了個哈欠：「春眠不覺曉，選錯可不能睡著喔。」",
+      "王之渙": "王之渙指向高樓：「想更上一層樓，先把這句接回來！」"
+    };
+
+    let state;
+    const els = {
+      hearts: document.getElementById("hearts"),
+      coins: document.getElementById("coins"),
+      questionCount: document.getElementById("questionCount"),
+      zoneBadge: document.getElementById("zoneBadge"),
+      storyText: document.getElementById("storyText"),
+      questionMeta: document.getElementById("questionMeta"),
+      questionText: document.getElementById("questionText"),
+      answers: document.getElementById("answers"),
+      feedback: document.getElementById("feedback"),
+      nextBtn: document.getElementById("nextBtn"),
+      removeBtn: document.getElementById("removeBtn"),
+      hintBtn: document.getElementById("hintBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+      map: document.getElementById("map"),
+      spirits: document.getElementById("spirits"),
+      bossHpText: document.getElementById("bossHpText"),
+      bossHpFill: document.getElementById("bossHpFill"),
+      startModal: document.getElementById("startModal"),
+      startBtn: document.getElementById("startBtn"),
+      shopModal: document.getElementById("shopModal"),
+      leaveShopBtn: document.getElementById("leaveShopBtn"),
+      reviveRow: document.getElementById("reviveRow"),
+      endModal: document.getElementById("endModal"),
+      endText: document.getElementById("endText"),
+      restartEndBtn: document.getElementById("restartEndBtn")
+    };
+
+    function freshState() {
+      return {
+        index: 0,
+        hearts: 3,
+        coins: 0,
+        wrong: 0,
+        bossHp: 50,
+        answered: false,
+        spirits: new Set(),
+        removeTools: 0,
+        hintTools: 0,
+        usedRemove: false
+      };
+    }
+
+    function shuffleAnswers(question) {
+      const packed = question.options.map((text, oldIndex) => ({ text, oldIndex }));
+      for (let i = packed.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [packed[i], packed[j]] = [packed[j], packed[i]];
+      }
+      return packed.map((item, newIndex) => ({
+        key: ["A", "B", "C", "D"][newIndex],
+        text: item.text,
+        correct: item.oldIndex === question.answer
+      }));
+    }
+
+    function zoneForIndex(index) {
+      return zones.find(zone => index >= zone.from && index <= zone.to) || zones[zones.length - 1];
+    }
+
+    function pulseEffect(name) {
+      document.body.classList.remove("success-flash", "alarm-flash", "shop-flash", "boss-flash");
+      void document.body.offsetWidth;
+      document.body.classList.add(name);
+      setTimeout(() => document.body.classList.remove(name), 900);
+    }
+
+    function renderMap() {
+      els.map.innerHTML = zones.map(zone => {
+        const active = state.index >= zone.from && state.index <= zone.to ? "active" : "";
+        return `<div class="map-step ${active}">${zone.name}</div>`;
+      }).join("");
+    }
+
+    function updateStats() {
+      els.hearts.textContent = "心".repeat(Math.max(state.hearts, 0)) || "心 0";
+      els.coins.textContent = `金幣 ${state.coins}`;
+      els.questionCount.textContent = state.index < questions.length ? `第 ${state.index + 1} 題` : "通關";
+      els.bossHpText.textContent = `${state.bossHp}/50`;
+      els.bossHpFill.style.width = `${Math.max(state.bossHp, 0) * 2}%`;
+      els.removeBtn.textContent = `使用神筆馬良 x${state.removeTools}`;
+      els.hintBtn.textContent = `使用時空沙漏 x${state.hintTools}`;
+      els.removeBtn.disabled = state.removeTools <= 0 || state.answered || state.usedRemove;
+      els.hintBtn.disabled = state.hintTools <= 0 || state.answered;
+      renderSpirits();
+      renderMap();
+    }
+
+    function renderSpirits() {
+      if (state.spirits.size === 0) {
+        els.spirits.innerHTML = `<span class="empty">還沒有夥伴，快去喚醒第一位詩人！</span>`;
+        return;
+      }
+      els.spirits.innerHTML = Array.from(state.spirits)
+        .map(name => `<span class="spirit">${name}</span>`)
+        .join("");
+    }
+
+    function loadQuestion() {
+      state.answered = false;
+      state.usedRemove = false;
+      els.nextBtn.disabled = true;
+      const question = questions[state.index];
+      const zone = zoneForIndex(state.index);
+      if (state.index === 20) pulseEffect("boss-flash");
+      els.zoneBadge.textContent = zone.name;
+      els.storyText.textContent = state.index === 20
+        ? "[🔊 轟隆隆！重低音史詩級魔王BGM進場！] 螢幕上下出現電影級黑邊，時空惡魔巨大的像素雙眼在紅色風暴中睜開，綠色蜂巢防護罩發出脈衝光芒！"
+        : "唐詩記憶碎片正在發光。選出正確詩句，就能修補時空裂縫，還有機會喚醒詩人的精靈力量！";
+      els.questionMeta.innerHTML = `<span>作者：${question.author}</span><span>作品：${question.poem}</span><span>難度：${question.level}</span>`;
+      els.questionText.textContent = question.q;
+      els.answers.innerHTML = "";
+      shuffleAnswers(question).forEach(option => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.type = "button";
+        button.dataset.correct = option.correct ? "true" : "false";
+        button.innerHTML = `<span class="key">${option.key}</span><span>${option.text}</span>`;
+        button.addEventListener("click", () => answer(option.correct, question));
+        els.answers.appendChild(button);
+      });
+      els.feedback.textContent = state.index === 0
+        ? "第一道唐詩密碼正在閃閃發光，請選 A、B、C 或 D。"
+        : "新的詩句碎片出現了，輪到你判斷！";
+      updateStats();
+    }
+
+    function answer(isCorrect, question) {
+      if (state.answered) return;
+      state.answered = true;
+      document.querySelectorAll(".answer").forEach(button => {
+        button.disabled = true;
+        if (button.dataset.correct === "true") {
+          button.style.borderColor = "rgba(31, 157, 122, 0.9)";
+          button.style.background = "#dff8dc";
+        }
+      });
+
+      if (isCorrect) {
+        pulseEffect("success-flash");
+        state.coins += 10;
+        let message = `[🔊 叮咚！鏘——！熱血古箏電音激昂響起！] 答對了！螢幕瞬間閃爍金色光芒，正確詩句化作「3D立體水墨巨龍」盤旋衝出螢幕，炸裂成金色粒子！你獲得 10 枚唐朝金幣。`;
+        if (state.index >= 20) {
+          state.bossHp -= 10;
+          message += ` 時空惡魔被詩光打中，蜂巢防護罩「喀啦」裂開，HP 扣 10！`;
+        }
+        if (!state.spirits.has(question.author)) {
+          state.spirits.add(question.author);
+          message += ` 恭喜！你成功喚醒了【${question.author}】的記憶！${question.author}對你使出了「${powers[question.author] || "唐詩靈光術"}」，成為你的夥伴！`;
+        } else {
+          message += ` 【${question.author}】在隊伍裡拍手說：「這句接得漂亮！」`;
+        }
+        els.feedback.textContent = message;
+      } else {
+        pulseEffect("alarm-flash");
+        state.hearts -= 1;
+        state.wrong += 1;
+        const correct = question.options[question.answer];
+        const taunt = taunts[question.author] || `${question.author}搖搖頭：「詩句差一點點就回家了，再把節奏念一次！」`;
+        els.feedback.textContent = `[🔊 嗶嗶——！低沉警報鐘聲「咚——」地敲響，伴隨電子雜音。] ${taunt} 錯誤字卡像玻璃 Shatter 碎裂，黑煙冒出「滋滋」電流火花。正確答案是「${correct}」。扣 1 顆心。`;
+      }
+
+      updateStats();
+
+      if (state.bossHp <= 0) {
+        setTimeout(() => endGame(true), 500);
+        return;
+      }
+
+      if (state.hearts <= 0) {
+        if (state.coins >= 20) {
+          openShop(true);
+        } else {
+          setTimeout(() => endGame(false), 500);
+        }
+        return;
+      }
+
+      els.nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      state.index += 1;
+      if (state.index >= questions.length) {
+        endGame(true);
+        return;
+      }
+      if (state.index % 5 === 0 && state.index < 20) {
+        openShop(false);
+        return;
+      }
+      loadQuestion();
+    }
+
+    function openShop(reviveOnly) {
+      pulseEffect("shop-flash");
+      els.reviveRow.style.display = reviveOnly ? "grid" : "none";
+      document.getElementById("shopIntro").textContent = reviveOnly
+        ? "[🔊 歡迎光臨！復古電子長安小曲響起] 霓虹招牌「長安補給站」浮現，掌櫃緊張地掏出愛心：「召喚師，你心心歸零了！花 20 金幣復活。」"
+        : "[🔊 歡迎光臨！復古電子長安小曲響起] 你通過了一個關卡！霓虹招牌「長安補給站」浮現，道具卡片像抽卡遊戲一樣閃閃發光。";
+      els.shopModal.classList.add("show");
+    }
+
+    function buy(kind) {
+      if (kind === "remove" && state.coins >= 50) {
+        state.coins -= 50;
+        state.removeTools += 1;
+        document.getElementById("shopIntro").textContent = "神筆馬良入袋！錯誤選項看到你都想躲起來。";
+      } else if (kind === "hint" && state.coins >= 50) {
+        state.coins -= 50;
+        state.hintTools += 1;
+        document.getElementById("shopIntro").textContent = "時空沙漏入袋！關鍵提示會從沙子裡閃出來。";
+      } else if (kind === "revive" && state.coins >= 20) {
+        state.coins -= 20;
+        state.hearts = 1;
+        els.shopModal.classList.remove("show");
+        els.nextBtn.disabled = false;
+        els.feedback.textContent = "愛心復活成功！你用最後的勇氣站起來，詩人精靈們又燃起希望。";
+      } else {
+        document.getElementById("shopIntro").textContent = "掌櫃搖搖算盤：「金幣不夠啦，先去答題賺錢吧！」";
+      }
+      updateStats();
+    }
+
+    function useRemoveTool() {
+      if (state.removeTools <= 0 || state.answered || state.usedRemove) return;
+      const wrongButtons = Array.from(document.querySelectorAll(".answer"))
+        .filter(button => button.dataset.correct !== "true" && !button.classList.contains("hide"));
+      const target = wrongButtons[Math.floor(Math.random() * wrongButtons.length)];
+      if (target) {
+        target.classList.add("hide");
+        state.removeTools -= 1;
+        state.usedRemove = true;
+        els.feedback.textContent = "神筆馬良一揮，刪掉了一個錯誤選項！";
+        updateStats();
+      }
+    }
+
+    function useHintTool() {
+      if (state.hintTools <= 0 || state.answered) return;
+      const correctButton = document.querySelector('.answer[data-correct="true"]');
+      if (correctButton) {
+        state.hintTools -= 1;
+        correctButton.style.boxShadow = "0 0 0 4px rgba(245, 182, 66, 0.52)";
+        els.feedback.textContent = "時空沙漏發亮：正確答案附近有金色詩光在閃爍。";
+        updateStats();
+      }
+    }
+
+    function endGame(win) {
+      document.body.classList.add("game-over-effect");
+      let title = "再接再厲的時空召喚師";
+      if (win && state.wrong === 0) {
+        title = "大唐詩仙轉世";
+      } else if (win && state.coins >= 150) {
+        title = "長安第一富豪";
+      } else if (win && state.wrong >= 3) {
+        title = "越挫越勇的鐵桿詩迷";
+      } else if (win) {
+        title = "唐詩精靈大師";
+      }
+      els.endText.textContent = win
+        ? `你打敗了時空惡魔，修復唐詩時空！稱號：【${title}】。金幣：${state.coins}，答錯：${state.wrong} 次，收服精靈：${state.spirits.size} 位。`
+        : `你的心心用完了，時空裂縫暫時還在扭動。稱號：【${title}】。金幣：${state.coins}，答錯：${state.wrong} 次。按下重新開始，再召集詩人精靈！`;
+      els.endModal.classList.add("show");
+    }
+
+    function restart() {
+      document.body.classList.remove("game-over-effect", "success-flash", "alarm-flash", "shop-flash", "boss-flash");
+      state = freshState();
+      els.endModal.classList.remove("show");
+      els.shopModal.classList.remove("show");
+      loadQuestion();
+    }
+
+    document.addEventListener("keydown", event => {
+      const key = event.key.toUpperCase();
+      if (!["A", "B", "C", "D"].includes(key) || state.answered) return;
+      const index = ["A", "B", "C", "D"].indexOf(key);
+      const button = document.querySelectorAll(".answer")[index];
+      if (button && !button.classList.contains("hide")) button.click();
+    });
+
+    els.startBtn.addEventListener("click", () => els.startModal.classList.remove("show"));
+    els.nextBtn.addEventListener("click", nextQuestion);
+    els.restartBtn.addEventListener("click", restart);
+    els.restartEndBtn.addEventListener("click", restart);
+    els.removeBtn.addEventListener("click", useRemoveTool);
+    els.hintBtn.addEventListener("click", useHintTool);
+    els.leaveShopBtn.addEventListener("click", () => {
+      els.shopModal.classList.remove("show");
+      loadQuestion();
+    });
+    document.querySelectorAll("[data-buy]").forEach(button => {
+      button.addEventListener("click", () => buy(button.dataset.buy));
+    });
+
+    restart();
+  </script>
+</body>
+</html>

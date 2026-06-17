@@ -5,265 +5,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>大冒險地圖</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
+    * { box-sizing: border-box; }
     :root {
-      --ink: #24180e;
-      --paper: #fff8df;
-      --line: rgba(69, 45, 22, 0.18);
-      --green: #1f8a4c;
-      --red: #c93f37;
-      --blue: #326fb2;
-      --shadow: rgba(20, 15, 10, 0.28);
+      --paper: #fff8e6;
+      --green: #22a06b;
+      --red: #df4d52;
+      --cyan: #2ed3e6;
+      --gold: #f4b642;
+      --shadow: rgba(6, 12, 24, 0.32);
     }
-
-    html,
-    body {
-      min-height: 100%;
-    }
-
+    html, body { min-height: 100%; }
     body {
       margin: 0;
-      color: var(--ink);
+      min-height: 100vh;
+      color: var(--paper);
       font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
-      background: #17291b;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(46, 211, 230, 0.26), transparent 18rem),
+        radial-gradient(circle at 84% 10%, rgba(244, 182, 66, 0.22), transparent 18rem),
+        #0b1726;
       overflow: hidden;
     }
-
-    button {
-      color: inherit;
-      font: inherit;
-    }
-
-    .cover-screen {
+    button { color: inherit; font: inherit; }
+    .cover {
       position: fixed;
       inset: 0;
-      z-index: 30;
+      z-index: 80;
       display: grid;
       place-items: center;
-      background: #080d0a;
+      background: #050914;
       cursor: pointer;
       opacity: 1;
-      transition: opacity 0.75s ease, visibility 0.75s ease;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
     }
-
-    .cover-screen.hide {
+    .cover.hide {
+      opacity: 0;
       visibility: hidden;
-      opacity: 0;
       pointer-events: none;
     }
-
-    .cover-screen img {
+    .cover img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
-
-    .story-screen {
-      position: fixed;
-      inset: 0;
-      z-index: 28;
-      display: none;
-      place-items: center;
-      background: #050706;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.45s ease;
-    }
-
-    .story-screen.show {
-      display: grid;
-      opacity: 1;
-    }
-
-    .story-screen.fade {
-      opacity: 0;
-    }
-
-    .story-screen img {
+    .cover-hint {
       position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .story-screen::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(90deg, rgba(0, 0, 0, 0.46), rgba(0, 0, 0, 0.08) 48%, rgba(0, 0, 0, 0.24)),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.08), transparent 36%, rgba(0, 0, 0, 0.36));
-      pointer-events: none;
-    }
-
-    .story-copy {
-      position: relative;
-      z-index: 1;
-      justify-self: start;
-      align-self: end;
-      width: min(560px, calc(100% - 32px));
-      max-height: calc(100svh - 112px);
-      margin: 0 0 clamp(70px, 10vh, 118px) clamp(16px, 6vw, 88px);
-      overflow: auto;
-      padding: clamp(14px, 2.4vw, 22px);
-      border: 1px solid rgba(255, 236, 174, 0.2);
-      border-radius: 8px;
-      color: #fff8dc;
-      background: rgba(8, 10, 13, 0.34);
-      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
-      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.86);
-      backdrop-filter: blur(2px);
-    }
-
-    .story-series {
-      margin: 0 0 12px;
-      color: rgba(255, 238, 174, 0.78);
-      font-size: clamp(1rem, 2vw, 1.2rem);
-      font-weight: 900;
-    }
-
-    .story-title {
-      margin: 0 0 18px;
-      color: #ffeaa3;
-      font-size: clamp(1.9rem, 5vw, 4rem);
-      line-height: 1;
-      letter-spacing: 0;
-    }
-
-    .story-text {
-      margin: 0;
-      white-space: pre-line;
-      line-height: 1.7;
-      font-weight: 800;
-      color: rgba(255, 248, 220, 0.94);
-      font-size: clamp(1rem, 2.1vw, 1.2rem);
-    }
-
-    .story-char {
-      opacity: 0;
-      animation: typeChar 0.04s ease forwards;
-    }
-
-    .story-hint {
-      position: absolute;
-      z-index: 2;
       left: 50%;
-      bottom: clamp(18px, 5vh, 54px);
+      bottom: clamp(22px, 6vh, 62px);
       transform: translateX(-50%);
-      min-width: 180px;
       padding: 10px 16px;
       border-radius: 999px;
-      color: #fff8dc;
+      color: #fff;
       background: rgba(0, 0, 0, 0.52);
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
-      font-weight: 900;
-      text-align: center;
+      font-weight: 950;
       text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
     }
-
     .app {
       min-height: 100vh;
       display: grid;
-      grid-template-rows: auto 1fr;
-      gap: 10px;
-      padding: 12px;
-      background:
-        radial-gradient(circle at 12% 10%, rgba(255, 228, 125, 0.2), transparent 22rem),
-        radial-gradient(circle at 88% 8%, rgba(99, 183, 232, 0.18), transparent 20rem),
-        linear-gradient(145deg, #264631 0%, #14251a 58%, #0d1711 100%);
-    }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      width: min(1672px, 100%);
-      margin: 0 auto;
-      color: #fff8dc;
-    }
-
-    .title h1 {
-      margin: 0;
-      font-size: clamp(1.6rem, 3.8vw, 3.2rem);
-      line-height: 1;
-      letter-spacing: 0;
-      text-shadow: 0 3px 0 rgba(43, 31, 13, 0.65), 0 12px 24px var(--shadow);
-    }
-
-    .title p {
-      margin: 5px 0 0;
-      color: rgba(255, 248, 220, 0.86);
-      font-size: clamp(0.9rem, 1.8vw, 1.1rem);
-      font-weight: 800;
-    }
-
-    .progress {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: end;
-    }
-
-    .held-count {
-      min-width: 118px;
-      padding: 9px 12px;
-      border-radius: 8px;
-      color: #fff8dc;
-      background: rgba(13, 19, 14, 0.66);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18), 0 10px 22px var(--shadow);
-      font-weight: 900;
-      text-align: center;
-    }
-
-    .clear-btn,
-    .close-btn,
-    .again-btn {
-      border: 0;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 900;
-      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-    }
-
-    .clear-btn {
-      min-height: 42px;
-      padding: 9px 14px;
-      color: #fff8dc;
-      background: rgba(13, 19, 14, 0.72);
-      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2), 0 10px 22px var(--shadow);
-    }
-
-    .clear-btn:hover,
-    .close-btn:hover,
-    .again-btn:hover {
-      transform: translateY(-2px);
-    }
-
-    .map-stage {
-      min-height: 0;
-      display: grid;
       place-items: center;
+      padding: 10px;
     }
-
-    .map-frame {
+    .map-container {
       position: relative;
-      width: min(100%, calc((100vh - 104px) * 1672 / 941));
+      width: min(100%, calc((100vh - 20px) * 1672 / 941));
       max-width: 1672px;
+      max-height: calc(100vh - 20px);
       aspect-ratio: 1672 / 941;
-      filter: drop-shadow(0 28px 52px rgba(0, 0, 0, 0.34));
+      filter: drop-shadow(0 26px 60px rgba(0, 0, 0, 0.38));
     }
-
-    .map-image {
-      position: absolute;
-      inset: 0;
+    .map-img {
       width: 100%;
       height: 100%;
       object-fit: contain;
@@ -271,788 +84,712 @@
       user-select: none;
       -webkit-user-drag: none;
     }
-
+    .info-panel {
+      position: fixed;
+      z-index: 20;
+      right: 16px;
+      top: 14px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: end;
+      padding: 10px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      background: rgba(7, 14, 26, 0.68);
+      box-shadow: 0 14px 36px rgba(0,0,0,0.26);
+      backdrop-filter: blur(6px);
+    }
+    .held {
+      min-height: 38px;
+      display: inline-grid;
+      place-items: center;
+      padding: 8px 10px;
+      border-radius: 8px;
+      color: #fff8e6;
+      background: rgba(255,255,255,0.1);
+      font-weight: 950;
+    }
+    .clear-btn, .modal-btn {
+      min-height: 38px;
+      padding: 8px 12px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 950;
+    }
+    .clear-btn {
+      color: #fff;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
     .hotspot {
       position: absolute;
-      z-index: 2;
-      padding: 0;
-      border: 0;
-      border-radius: 999px;
+      border-radius: 12px;
       cursor: pointer;
       background: rgba(255, 255, 255, 0);
       transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
     }
-
     .hotspot:hover,
     .hotspot:focus-visible {
-      outline: 0;
-      background: rgba(255, 245, 176, 0.16);
-      box-shadow: 0 0 34px 13px rgba(255, 235, 128, 0.42);
+      background: rgba(255, 246, 166, 0.14);
+      box-shadow: 0 0 28px rgba(255, 230, 116, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.24);
       transform: scale(1.02);
+      outline: none;
     }
-
-    .hotspot-dynasty {
-      left: 13.6%;
-      top: 34.2%;
-      width: 18.4%;
-      height: 9.2%;
-    }
-
-    .hotspot-idiom {
-      left: 68.5%;
-      top: 34.1%;
-      width: 18.6%;
-      height: 9.3%;
-    }
-
-    .hotspot-warrior {
-      left: 8.8%;
-      top: 87%;
-      width: 20.4%;
-      height: 9%;
-    }
-
-    .hotspot-poetry {
-      left: 68.6%;
-      top: 87.1%;
-      width: 19.4%;
-      height: 8.8%;
-    }
-
-    .hotspot-door {
-      left: 40.3%;
-      top: 58.2%;
-      width: 19.6%;
-      height: 10.8%;
-    }
-
+    .hotspot.level-1 { left: 10.4%; top: 34.9%; width: 23.8%; height: 9.5%; }
+    .hotspot.level-2 { left: 10.4%; top: 85.5%; width: 24.0%; height: 9.5%; }
+    .hotspot.level-3 { left: 67.6%; top: 34.9%; width: 24.0%; height: 9.5%; }
+    .hotspot.level-4 { left: 67.5%; top: 85.6%; width: 24.2%; height: 9.5%; }
+    .hotspot.gate { left: 40.2%; top: 61.4%; width: 19.8%; height: 11.6%; }
     .stamp {
       position: absolute;
-      z-index: 3;
+      width: clamp(24px, 3.2vw, 54px);
+      height: clamp(24px, 3.2vw, 54px);
       display: none;
       place-items: center;
-      width: clamp(26px, 4.2vw, 58px);
-      height: clamp(26px, 4.2vw, 58px);
-      border: 3px solid rgba(255, 255, 255, 0.9);
       border-radius: 999px;
-      color: #fff;
-      background: rgba(31, 138, 76, 0.92);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22), 0 0 0 4px rgba(31, 138, 76, 0.24);
-      font-size: clamp(1.15rem, 3vw, 2.3rem);
-      font-weight: 1000;
-      line-height: 1;
+      color: #062417;
+      background: #77f2a3;
+      border: 3px solid #fff8e6;
+      box-shadow: 0 10px 22px rgba(0,0,0,0.26), 0 0 24px rgba(119, 242, 163, 0.8);
+      font-size: clamp(1.05rem, 2vw, 2rem);
+      font-weight: 950;
+      pointer-events: none;
     }
-
-    .stamp.show {
-      display: grid;
-    }
-
-    .stamp-dynasty {
-      left: 28.4%;
-      top: 33.1%;
-    }
-
-    .stamp-idiom {
-      left: 83.6%;
-      top: 33%;
-    }
-
-    .stamp-warrior {
-      left: 26.2%;
-      top: 85.5%;
-    }
-
-    .stamp-poetry {
-      left: 84%;
-      top: 85.6%;
-    }
-
+    .stamp.show { display: grid; }
+    .stamp.level-1 { left: 31.5%; top: 34.0%; }
+    .stamp.level-2 { left: 31.7%; top: 84.8%; }
+    .stamp.level-3 { left: 88.9%; top: 34.0%; }
+    .stamp.level-4 { left: 89.0%; top: 84.9%; }
     .modal {
       position: fixed;
       inset: 0;
-      z-index: 10;
+      z-index: 50;
       display: none;
       place-items: center;
       padding: 18px;
-      background: rgba(5, 9, 8, 0.72);
+      background: rgba(4, 7, 14, 0.78);
     }
-
-    .modal.show {
+    .modal.show { display: grid; }
+    .cutscene {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: none;
+      place-items: center;
+      background: #050505;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+    .cutscene.show {
       display: grid;
+      opacity: 1;
     }
-
-    .modal-panel {
-      width: min(860px, 100%);
-      max-height: min(820px, calc(100vh - 36px));
-      overflow: auto;
-      border: 2px solid rgba(255, 224, 138, 0.8);
-      border-radius: 8px;
-      background: var(--paper);
-      box-shadow: 0 28px 80px rgba(0, 0, 0, 0.44);
+    .cutscene.fade {
+      opacity: 0;
+      pointer-events: none;
     }
-
-    .modal-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
+    .cutscene img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      filter: grayscale(1) contrast(1.06);
     }
-
-    .modal-head h2 {
+    .cutscene::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.06), transparent 28%, rgba(0,0,0,0.58)),
+        radial-gradient(circle at 50% 42%, transparent 0 46%, rgba(0,0,0,0.38) 100%);
+      pointer-events: none;
+    }
+    .cutscene-copy {
+      position: relative;
+      z-index: 1;
+      align-self: end;
+      width: min(760px, calc(100% - 34px));
+      margin: 0 0 clamp(34px, 8vh, 84px);
+      padding: clamp(16px, 3vw, 24px);
+      color: rgba(255,255,255,0.92);
+      text-align: center;
+      text-shadow: 0 3px 16px rgba(0,0,0,0.86);
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,0.18));
+    }
+    .cutscene-kicker {
+      margin: 0 0 8px;
+      color: rgba(255,255,255,0.66);
+      font-weight: 700;
+      letter-spacing: 0.16em;
+    }
+    .cutscene-title {
+      margin: 0 0 18px;
+      font-family: "Noto Serif TC", "PMingLiU", serif;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1.05;
+      letter-spacing: 0.08em;
+      font-weight: 900;
+    }
+    .cutscene-text {
       margin: 0;
-      font-size: clamp(1.45rem, 4vw, 2.2rem);
+      white-space: pre-line;
+      font-family: "Noto Serif TC", "PMingLiU", serif;
+      font-size: clamp(1.08rem, 2.2vw, 1.45rem);
+      line-height: 1.9;
+      letter-spacing: 0.08em;
     }
-
-    .close-btn {
-      width: 42px;
-      height: 42px;
-      color: #fff8dc;
-      background: #5b4630;
+    .cutscene-hint {
+      margin-top: 18px;
+      color: rgba(255,255,255,0.66);
+      font-size: 0.95rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
     }
-
-    .door-game {
-      padding: 22px;
+    .dialog {
+      width: min(960px, 100%);
+      max-height: min(760px, calc(100vh - 36px));
+      overflow: auto;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 20% 0%, rgba(46, 211, 230, 0.18), transparent 18rem),
+        #111a2f;
+      box-shadow: 0 30px 90px rgba(0,0,0,0.48);
+      padding: 20px;
     }
-
+    .dialog h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.6rem, 4vw, 2.6rem);
+      letter-spacing: 0;
+    }
+    .dialog p {
+      margin: 0 0 14px;
+      color: rgba(255, 248, 230, 0.8);
+      font-weight: 850;
+      line-height: 1.6;
+    }
     .slots {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
-      margin-bottom: 22px;
+      gap: 10px;
+      margin: 16px 0;
     }
-
     .slot {
-      min-height: 154px;
-      display: grid;
-      align-content: center;
-      justify-items: center;
-      gap: 8px;
-      padding: 12px;
-      border: 3px dashed rgba(65, 45, 25, 0.28);
-      border-radius: 8px;
-      background: #efe1b8;
-      color: #71624b;
-      font-weight: 900;
-      transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
-    }
-
-    .slot.over {
-      border-color: var(--blue);
-      background: #e5f1ff;
-    }
-
-    .slot.filled {
-      border-style: solid;
-      border-color: var(--green);
-      background: #dcffe4;
-      color: var(--green);
-    }
-
-    .slot.wrong {
-      animation: wrongFlash 0.34s ease;
-    }
-
-    .slot-label {
-      font-size: 1.15rem;
-    }
-
-    .slot-hint {
-      font-size: 0.95rem;
-      opacity: 0.74;
-    }
-
-    .bag-title {
-      margin: 0 0 12px;
-      color: #5d431e;
-      font-size: 1.15rem;
-      font-weight: 900;
-    }
-
-    .bag {
       min-height: 132px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      padding: 14px;
-      border-radius: 8px;
-      background: #ead6a3;
-      box-shadow: inset 0 0 0 1px rgba(69, 45, 22, 0.16);
-    }
-
-    .cert {
-      min-width: 142px;
-      min-height: 88px;
       display: grid;
       place-items: center;
-      gap: 3px;
-      padding: 10px 12px;
-      border: 2px solid #b88628;
+      gap: 8px;
+      padding: 10px;
+      border: 2px dashed rgba(255,255,255,0.28);
       border-radius: 8px;
-      color: #3a2a13;
-      background: linear-gradient(180deg, #fff3bf, #f1c85d);
-      box-shadow: 0 10px 18px rgba(65, 45, 25, 0.18);
-      cursor: grab;
-      font-weight: 900;
+      background: rgba(255,255,255,0.06);
       text-align: center;
-      touch-action: none;
+      font-weight: 950;
+    }
+    .slot.correct {
+      border-color: rgba(83, 255, 183, 0.9);
+      background: rgba(34, 160, 107, 0.26);
+    }
+    .slot.wrong { animation: wrongFlash 0.35s ease; }
+    .backpack {
+      min-height: 124px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 8px;
+      background: rgba(0,0,0,0.18);
+    }
+    .badge {
+      min-width: 138px;
+      min-height: 54px;
+      display: inline-grid;
+      place-items: center;
+      padding: 9px 12px;
+      border: 1px solid rgba(255,255,255,0.22);
+      border-radius: 8px;
+      color: #082317;
+      background: linear-gradient(135deg, #fff1a8, #86f0c0);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.2), 0 0 22px rgba(244, 182, 66, 0.22);
+      font-weight: 950;
+      cursor: grab;
       user-select: none;
+      touch-action: none;
     }
-
-    .cert:active {
-      cursor: grabbing;
-    }
-
-    .cert .emoji {
-      font-size: 2rem;
-      line-height: 1;
-    }
-
-    .cert.placed {
-      min-width: 118px;
-      min-height: 76px;
-      box-shadow: none;
-      cursor: default;
-    }
-
-    .cert.dragging {
-      opacity: 0.62;
-    }
-
-    .empty-bag {
-      color: #6d5a3a;
-      font-weight: 800;
-    }
-
+    .badge:active { cursor: grabbing; }
+    .badge.placed { cursor: default; }
     .drag-ghost {
       position: fixed;
-      z-index: 20;
+      z-index: 70;
       pointer-events: none;
-      opacity: 0.9;
-      transform: translate(-50%, -50%);
+      opacity: 0.92;
+      transform: translate(-50%, -50%) scale(1.04);
     }
-
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: end;
+      margin-top: 16px;
+    }
+    .modal-btn.primary {
+      color: #082317;
+      background: linear-gradient(135deg, #ffe082, #55e4b0);
+    }
+    .modal-btn.secondary {
+      color: #fff;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.16);
+    }
     .complete {
       display: none;
-      place-items: center;
-      gap: 16px;
-      min-height: 410px;
-      padding: 36px 22px;
       text-align: center;
+      padding: 26px 8px 8px;
     }
-
-    .complete.show {
-      display: grid;
-    }
-
-    .complete h2 {
-      margin: 0;
-      color: #6d3e08;
-      font-size: clamp(2rem, 6vw, 4rem);
-      line-height: 1;
-    }
-
-    .time {
-      color: #3b2a16;
-      font-size: 1.4rem;
+    .complete.show { display: block; }
+    .gate-game.hide { display: none; }
+    .empty {
+      color: rgba(255, 248, 230, 0.72);
       font-weight: 900;
     }
-
-    .again-btn {
-      padding: 13px 18px;
-      color: #fff8dc;
-      background: var(--green);
-      box-shadow: 0 14px 24px rgba(31, 138, 76, 0.28);
-    }
-
     @keyframes wrongFlash {
-      0%,
-      100% {
-        border-color: rgba(65, 45, 25, 0.28);
-        background: #efe1b8;
-        transform: translateX(0);
-      }
-      25%,
-      75% {
-        border-color: var(--red);
-        background: #ffd8d5;
-        transform: translateX(-5px);
-      }
-      50% {
-        transform: translateX(5px);
-      }
+      0%, 100% { border-color: rgba(255,255,255,0.28); background: rgba(255,255,255,0.06); }
+      50% { border-color: #ff6b6b; background: rgba(223, 77, 82, 0.3); transform: translateX(4px); }
     }
-
-    @keyframes typeChar {
-      to {
-        opacity: 1;
-      }
-    }
-
-    @media (max-width: 980px) {
-      .slots {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
     @media (max-width: 760px) {
-      body {
-        overflow: auto;
+      body { overflow: auto; }
+      .app { min-height: 100svh; padding-top: 70px; }
+      .map-container {
+        width: min(100%, calc((100svh - 90px) * 1672 / 941));
+        max-height: calc(100svh - 90px);
       }
-
-      .app {
-        min-height: 100svh;
-        padding: 10px;
+      .info-panel {
+        left: 10px;
+        right: 10px;
+        justify-content: space-between;
       }
-
-      .topbar {
-        align-items: start;
-      }
-
-      .title p {
-        max-width: 15rem;
-      }
-
-      .progress {
-        max-width: 11rem;
-      }
-
-      .clear-btn,
-      .held-count {
-        width: 100%;
-      }
-
-      .map-frame {
-        width: min(100%, calc((100svh - 128px) * 1672 / 941));
-      }
-
-      .slots {
-        grid-template-columns: 1fr;
-      }
-
-      .story-copy {
-        justify-self: center;
-        width: min(92%, 520px);
-        max-height: calc(100svh - 92px);
-        margin: 0 0 68px;
-        padding: 14px;
-      }
+      .slots { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
-  <div class="cover-screen" id="coverScreen" aria-label="遊戲開場封面">
+  <div class="cover" id="cover" aria-label="遊戲開場封面">
     <img src="cover.png" alt="大冒險地圖開場封面">
+    <div class="cover-hint">點一下開始冒險</div>
   </div>
 
-  <div class="story-screen" id="storyScreen" aria-live="polite">
-    <img id="storyImage" src="page1.png" alt="">
-    <article class="story-copy">
-      <p class="story-series">群星歸途</p>
-      <h2 class="story-title" id="storyTitle">風止之地</h2>
-      <p class="story-text" id="storyText"></p>
-    </article>
-    <div class="story-hint" id="storyHint">點擊進入關卡</div>
+  <main class="app">
+    <div class="info-panel">
+      <span class="held" id="heldCount">持有 0 / 4</span>
+      <button class="clear-btn" id="clearBtn" type="button">🔄 清除進度</button>
+    </div>
+
+    <section class="map-container" aria-label="大冒險地圖">
+      <img class="map-img" src="map-bg.png" alt="大冒險地圖">
+      <button class="hotspot level-1" data-action="level" data-index="0" aria-label="唐朝時空冒險——唐詩精靈大師" type="button"></button>
+      <button class="hotspot level-2" data-action="level" data-index="1" aria-label="大唐文字魔術師——唐詩填空大冒險" type="button"></button>
+      <button class="hotspot level-3" data-action="level" data-index="2" aria-label="大唐心靈讀心師——唐詩情感解密大冒險" type="button"></button>
+      <button class="hotspot level-4" data-action="level" data-index="3" aria-label="大唐未來編碼局——唐詩超能力綜合應用戰" type="button"></button>
+      <button class="hotspot gate" data-action="gate" aria-label="中央大門" type="button"></button>
+      <span class="stamp level-1" data-stamp="0">✓</span>
+      <span class="stamp level-2" data-stamp="1">✓</span>
+      <span class="stamp level-3" data-stamp="2">✓</span>
+      <span class="stamp level-4" data-stamp="3">✓</span>
+    </section>
+  </main>
+
+  <div class="modal" id="gateModal" role="dialog" aria-modal="true" aria-labelledby="gateTitle">
+    <div class="dialog">
+      <div class="gate-game" id="gateGame">
+        <h2 id="gateTitle">🔒 通關大門</h2>
+        <p>把背包裡的憑證拖到對應凹槽。持有不足 4 個也可以先試，4 個都放對才會開門。</p>
+        <div class="slots" id="slots"></div>
+        <h3>背包欄</h3>
+        <div class="backpack" id="backpack"></div>
+        <div class="modal-actions">
+          <button class="modal-btn secondary" id="resetSlotsBtn" type="button">重置凹槽</button>
+          <button class="modal-btn secondary" id="closeModalBtn" type="button">關閉</button>
+        </div>
+      </div>
+      <div class="complete" id="completeView">
+        <h2>【冒險完成】</h2>
+        <p id="timeText">總冒險時長：00 分 00 秒</p>
+        <button class="modal-btn primary" id="againBtn" type="button">再次冒險</button>
+      </div>
+    </div>
   </div>
 
-  <div class="app">
-    <header class="topbar">
-      <div class="title">
-        <h1>大冒險地圖</h1>
-        <p>完成 4 個關卡，拿到 4 個憑證解開大門</p>
-      </div>
-      <div class="progress">
-        <span class="held-count" id="heldCount">目前持有：0 / 4</span>
-        <button class="clear-btn" id="clearProgress" type="button">🔄 清除進度</button>
-      </div>
-    </header>
-
-    <main class="map-stage" aria-label="冒險地圖">
-      <div class="map-frame">
-        <img class="map-image" src="map-bg.png" alt="大冒險地圖">
-        <button class="hotspot hotspot-dynasty" data-href="示範1_朝代配對/index.html" data-page="page1.png" type="button" aria-label="前往朝代配對"></button>
-        <button class="hotspot hotspot-idiom" data-href="示範2_成語填字/index.html" data-page="page2.png" type="button" aria-label="前往成語填字"></button>
-        <button class="hotspot hotspot-warrior" data-href="示範3_打怪RPG/index.html" data-page="page3.png" type="button" aria-label="前往打怪 RPG"></button>
-        <button class="hotspot hotspot-poetry" data-href="示範4_詩詞對對樂/index.html" data-page="page4.png" type="button" aria-label="前往詩詞對對樂"></button>
-        <button class="hotspot hotspot-door" id="openDoor" type="button" aria-label="開啟中央大門"></button>
-        <span class="stamp stamp-dynasty" data-stamp="cert_dynasty" aria-hidden="true">✓</span>
-        <span class="stamp stamp-idiom" data-stamp="cert_idiom" aria-hidden="true">✓</span>
-        <span class="stamp stamp-warrior" data-stamp="cert_warrior" aria-hidden="true">✓</span>
-        <span class="stamp stamp-poetry" data-stamp="cert_poetry" aria-hidden="true">✓</span>
-      </div>
-    </main>
-  </div>
-
-  <div class="modal" id="doorModal" role="dialog" aria-modal="true" aria-labelledby="doorTitle">
-    <div class="modal-panel">
-      <div class="modal-head">
-        <h2 id="doorTitle">通關大門</h2>
-        <button class="close-btn" id="closeDoor" type="button" aria-label="關閉">×</button>
-      </div>
-
-      <div class="door-game" id="doorGame">
-        <section class="slots" aria-label="憑證凹槽">
-          <div class="slot" data-slot="dynasty">
-            <span class="slot-label">朝代</span>
-            <span class="slot-hint">放入朝代之印</span>
-          </div>
-          <div class="slot" data-slot="idiom">
-            <span class="slot-label">成語</span>
-            <span class="slot-hint">放入成語之印</span>
-          </div>
-          <div class="slot" data-slot="warrior">
-            <span class="slot-label">勇者</span>
-            <span class="slot-hint">放入勇者之印</span>
-          </div>
-          <div class="slot" data-slot="poetry">
-            <span class="slot-label">詩詞</span>
-            <span class="slot-hint">放入詩詞之印</span>
-          </div>
-        </section>
-
-        <p class="bag-title">背包欄</p>
-        <section class="bag" id="bag" aria-label="目前持有的憑證"></section>
-      </div>
-
-      <section class="complete" id="completeView" aria-live="polite">
-        <h2>🏆 冒險完成！</h2>
-        <p class="time">感謝你的旅程。</p>
-        <div class="time" id="adventureTime">總冒險時長：00 分 00 秒</div>
-        <button class="again-btn" id="again" type="button">再次冒險</button>
-      </section>
+  <div class="cutscene" id="cutscene" aria-label="結局過場動畫">
+    <img id="cutsceneImage" src="四印歸一.png" alt="">
+    <div class="cutscene-copy">
+      <p class="cutscene-kicker" id="cutsceneKicker">《四印之後》</p>
+      <h2 class="cutscene-title" id="cutsceneTitle">四印歸一</h2>
+      <p class="cutscene-text" id="cutsceneText"></p>
+      <div class="cutscene-hint" id="cutsceneHint">點擊，往下一頁</div>
     </div>
   </div>
 
   <script>
     const certs = [
-      { key: "cert_dynasty", type: "dynasty", name: "朝代之印", emoji: "🎴" },
-      { key: "cert_idiom", type: "idiom", name: "成語之印", emoji: "📝" },
-      { key: "cert_warrior", type: "warrior", name: "勇者之印", emoji: "⚔️" },
-      { key: "cert_poetry", type: "poetry", name: "詩詞之印", emoji: "📜" }
+      {
+        key: "cert_dynasty",
+        type: "spirit",
+        short: "唐詩精靈",
+        badge: "唐詩精靈之印",
+        emoji: "🎴",
+        href: "示範1_唐朝時空冒險——唐詩精靈大師/index.html"
+      },
+      {
+        key: "cert_idiom",
+        type: "fill",
+        short: "唐詩填空",
+        badge: "唐詩填空之印",
+        emoji: "📝",
+        href: "示範2_大唐文字魔術師——唐詩填空大冒險/index.html"
+      },
+      {
+        key: "cert_warrior",
+        type: "emotion",
+        short: "唐詩情感解密",
+        badge: "唐詩情感解密之印",
+        emoji: "⚔️",
+        href: "示範3_大唐心靈讀心師——唐詩情感解密大冒險/index.html"
+      },
+      {
+        key: "cert_poetry",
+        altKey: "cert_power",
+        type: "power",
+        short: "唐詩超能力",
+        badge: "唐詩超能力之印",
+        emoji: "⚔️",
+        href: "示範4_大唐未來編碼局——唐詩超能力綜合應用戰/index.html"
+      }
     ];
 
-    const storyPages = {
-      "page1.png": {
-        title: "風止之地",
-        text: "曾經震耳欲聾的戰吼，\n如今只剩風聲。\n\n世界終於記起了安靜的模樣。\n\n\n「原來終點，\n也會這麼平靜。」"
-      },
-      "page2.png": {
-        title: "燈火再明",
-        text: "有些故事被寫進史冊。\n\n有些故事，\n只留在人們安穩的日常裡。"
-      },
-      "page3.png": {
-        title: "群山回聲",
-        text: "山依舊矗立。\n\n河依舊流淌。\n\n世界從未因誰而停止轉動。\n\n\n「真好啊……」"
-      },
-      "page4.png": {
-        title: "旅人未停",
-        text: "沒有城鎮，沒有夥伴。\n\n只有前方尚未命名的道路。\n\n旅程從來不是為了抵達。\n\n而是在一次次離開之後，\n仍願意繼續前行。\n\n\n「下一個故事，\n會在哪裡等我呢？」"
-      },
-      "page5.png": {
-        title: "新的地平線",
-        text: "未曾被探索的世界。\n\n每個傳說都會迎來結束。\n\n而每個結束，\n都只是另一段冒險的序章。\n\n「那麼，\n我們再出發吧。」"
-      }
+    const els = {
+      cover: document.getElementById("cover"),
+      cutscene: document.getElementById("cutscene"),
+      cutsceneImage: document.getElementById("cutsceneImage"),
+      cutsceneTitle: document.getElementById("cutsceneTitle"),
+      cutsceneText: document.getElementById("cutsceneText"),
+      cutsceneHint: document.getElementById("cutsceneHint"),
+      heldCount: document.getElementById("heldCount"),
+      clearBtn: document.getElementById("clearBtn"),
+      gateModal: document.getElementById("gateModal"),
+      slots: document.getElementById("slots"),
+      backpack: document.getElementById("backpack"),
+      gateGame: document.getElementById("gateGame"),
+      completeView: document.getElementById("completeView"),
+      timeText: document.getElementById("timeText"),
+      resetSlotsBtn: document.getElementById("resetSlotsBtn"),
+      closeModalBtn: document.getElementById("closeModalBtn"),
+      againBtn: document.getElementById("againBtn")
     };
 
-    const coverScreen = document.querySelector("#coverScreen");
-    const storyScreen = document.querySelector("#storyScreen");
-    const storyImage = document.querySelector("#storyImage");
-    const storyHint = document.querySelector("#storyHint");
-    const storyTitle = document.querySelector("#storyTitle");
-    const storyText = document.querySelector("#storyText");
-    const heldCount = document.querySelector("#heldCount");
-    const modal = document.querySelector("#doorModal");
-    const doorGame = document.querySelector("#doorGame");
-    const completeView = document.querySelector("#completeView");
-    const bag = document.querySelector("#bag");
-    const slots = [...document.querySelectorAll(".slot")];
-    const adventureTime = document.querySelector("#adventureTime");
-    let touchDrag = null;
-    let storyAction = null;
+    const placed = new Map();
+    let activeDrag = null;
+    let pendingCutscene = null;
+    let audioCtx = null;
+    let audioGain = null;
+    let audioOsc = null;
+    let narratorVoice = null;
 
-    function ensureStartTime() {
+    const cutscenes = [
+      {
+        image: "四印歸一.png",
+        title: "四印歸一",
+        text: "尋遍千山萬水，\n終於來到答案之前。\n而答案，從來不在門後。"
+      },
+      {
+        image: "萬詩之境.png",
+        title: "萬詩之境",
+        text: "那些曾被誦讀的文字，\n從未沉睡。\n它們只是等待，\n下一位同行的人。"
+      },
+      {
+        image: "詩魂長河.png",
+        title: "詩魂長河",
+        text: "人會遠去，\n山河也會改變。\n唯有留下的心意，\n仍在歲月之中迴響。"
+      },
+      {
+        image: "新的旅人.png",
+        title: "新的旅人",
+        text: "故事沒有結束。\n只是有人抵達，\n有人出發。"
+      },
+      {
+        image: "群山之外.png",
+        title: "群山之外",
+        text: "山外仍有山，\n詩外仍有詩。\n\n而你的故事，\n將在下一頁繼續。"
+      }
+    ];
+
+    function initStartTime() {
       if (!localStorage.getItem("adventure_start")) {
         localStorage.setItem("adventure_start", String(Date.now()));
       }
     }
 
-    function hasCert(cert) {
-      return localStorage.getItem(cert.key) === "true";
-    }
-
-    function refreshMap() {
-      const count = certs.filter(hasCert).length;
-      heldCount.textContent = `目前持有：${count} / 4`;
-
-      document.querySelectorAll(".stamp").forEach((stamp) => {
-        stamp.classList.toggle("show", localStorage.getItem(stamp.dataset.stamp) === "true");
+    function initCover() {
+      if (sessionStorage.getItem("adventure_cover_seen") === "true") {
+        els.cover.classList.add("hide");
+      }
+      els.cover.addEventListener("click", () => {
+        sessionStorage.setItem("adventure_cover_seen", "true");
+        els.cover.classList.add("hide");
       });
     }
 
-    function allLevelsComplete() {
-      return certs.every(hasCert);
+    function hasCert(cert) {
+      return localStorage.getItem(cert.key) === "true" || (cert.altKey && localStorage.getItem(cert.altKey) === "true");
     }
 
-    function hideCover() {
-      sessionStorage.setItem("adventure_cover_seen", "true");
-      coverScreen.classList.add("hide");
+    function heldCerts() {
+      return certs.filter(hasCert);
     }
 
-    if (sessionStorage.getItem("adventure_cover_seen") === "true") {
-      coverScreen.classList.add("hide");
+    function renderProgress() {
+      els.heldCount.textContent = `持有 ${heldCerts().length} / 4`;
+      document.querySelectorAll("[data-stamp]").forEach(stamp => {
+        stamp.classList.toggle("show", hasCert(certs[Number(stamp.dataset.stamp)]));
+      });
     }
 
-    coverScreen.addEventListener("click", hideCover);
-    coverScreen.addEventListener("keydown", hideCover);
+    function openGate() {
+      renderGate();
+      els.gateModal.classList.add("show");
+    }
 
-    document.querySelectorAll(".hotspot[data-href]").forEach((hotspot) => {
-      hotspot.addEventListener("click", () => {
-        sessionStorage.setItem("adventure_cover_seen", "true");
-        const targetUrl = new URL(hotspot.dataset.href, window.location.href);
-        showStoryPage(hotspot.dataset.page, "點擊進入關卡", () => {
-          window.location.assign(targetUrl.href);
+    function startEndingMusic() {
+      if (!window.AudioContext && !window.webkitAudioContext) return;
+      if (!audioCtx) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        audioCtx = new AudioContextClass();
+        audioGain = audioCtx.createGain();
+        audioOsc = audioCtx.createOscillator();
+        audioOsc.type = "sine";
+        audioOsc.frequency.value = 146.83;
+        audioGain.gain.value = 0;
+        audioOsc.connect(audioGain);
+        audioGain.connect(audioCtx.destination);
+        audioOsc.start();
+      }
+      if (audioCtx.state === "suspended") audioCtx.resume();
+      audioGain.gain.cancelScheduledValues(audioCtx.currentTime);
+      audioGain.gain.setTargetAtTime(0.045, audioCtx.currentTime, 1.4);
+    }
+
+    function fadeEndingMusic() {
+      if (!audioCtx || !audioGain) return;
+      audioGain.gain.cancelScheduledValues(audioCtx.currentTime);
+      audioGain.gain.setTargetAtTime(0, audioCtx.currentTime, 1.8);
+    }
+
+    function pickNarratorVoice() {
+      if (!("speechSynthesis" in window)) return null;
+      const voices = window.speechSynthesis.getVoices();
+      const zhVoices = voices.filter(voice => /zh|Chinese|Taiwan|Mandarin/i.test(`${voice.lang} ${voice.name}`));
+      const maleVoice = zhVoices.find(voice => /male|男|yunxi|yunjian|kangkang|Sinji|Eddy/i.test(voice.name));
+      narratorVoice = maleVoice || zhVoices[0] || voices[0] || null;
+      return narratorVoice;
+    }
+
+    function speakCutscene(scene) {
+      if (!("speechSynthesis" in window)) return;
+      window.speechSynthesis.cancel();
+      const text = `四印之後。${scene.title}。${scene.text}`;
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "zh-TW";
+      utterance.rate = 0.72;
+      utterance.pitch = 0.58;
+      utterance.volume = 0.95;
+      utterance.voice = narratorVoice || pickNarratorVoice();
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function stopNarration() {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    }
+
+    function showCutscene(index, nextAction) {
+      const scene = cutscenes[index];
+      pendingCutscene = nextAction;
+      startEndingMusic();
+      els.cutsceneImage.src = scene.image;
+      els.cutsceneImage.alt = scene.title;
+      els.cutsceneTitle.textContent = scene.title;
+      els.cutsceneText.textContent = scene.text;
+      els.cutsceneHint.textContent = index === 4 ? "點擊，開啟中央大門" : "點擊，進入下一幕";
+      els.cutscene.classList.remove("fade");
+      els.cutscene.classList.add("show");
+      speakCutscene(scene);
+    }
+
+    function finishCutscene() {
+      if (!pendingCutscene) return;
+      stopNarration();
+      const action = pendingCutscene;
+      pendingCutscene = null;
+      els.cutscene.classList.add("fade");
+      setTimeout(() => {
+        els.cutscene.classList.remove("show", "fade");
+        if (action.type === "gate") {
+          openGate();
+        } else {
+          sessionStorage.setItem("adventure_cover_seen", "true");
+          window.location.href = action.href;
+        }
+      }, 720);
+    }
+
+    function renderGate() {
+      placed.clear();
+      els.gateGame.classList.remove("hide");
+      els.completeView.classList.remove("show");
+      els.slots.innerHTML = certs.map(cert => `
+        <div class="slot" data-type="${cert.type}">
+          <span>${cert.short}</span>
+        </div>
+      `).join("");
+      const held = heldCerts();
+      els.backpack.innerHTML = held.length
+        ? held.map(cert => badgeHtml(cert)).join("")
+        : `<span class="empty">背包還沒有憑證。先完成關卡，再回來開門！</span>`;
+      bindDrag();
+    }
+
+    function badgeHtml(cert) {
+      return `<div class="badge" draggable="true" data-type="${cert.type}">${cert.emoji} ${cert.badge}</div>`;
+    }
+
+    function bindDrag() {
+      document.querySelectorAll(".badge").forEach(badge => {
+        badge.addEventListener("dragstart", event => {
+          event.dataTransfer.setData("text/plain", badge.dataset.type);
+        });
+        badge.addEventListener("pointerdown", startPointerDrag);
+      });
+      document.querySelectorAll(".slot").forEach(slot => {
+        slot.addEventListener("dragover", event => event.preventDefault());
+        slot.addEventListener("drop", event => {
+          event.preventDefault();
+          const type = event.dataTransfer.getData("text/plain");
+          const badge = document.querySelector(`.badge[data-type="${type}"]:not(.placed)`);
+          tryPlace(type, slot, badge);
         });
       });
-    });
-
-    function showStoryPage(imageSrc, hint, onComplete) {
-      const story = storyPages[imageSrc];
-      storyAction = onComplete;
-      storyImage.src = imageSrc;
-      storyTitle.textContent = story.title;
-      renderTypewriter(storyText, story.text);
-      storyHint.textContent = hint;
-      storyScreen.classList.remove("fade");
-      storyScreen.classList.add("show");
     }
 
-    function renderTypewriter(element, text) {
-      element.innerHTML = "";
-      [...text].forEach((char, index) => {
-        if (char === "\n") {
-          element.appendChild(document.createElement("br"));
-          return;
-        }
-
-        const span = document.createElement("span");
-        span.className = "story-char";
-        span.style.animationDelay = `${index * 0.045}s`;
-        span.textContent = char;
-        element.appendChild(span);
-      });
+    function startPointerDrag(event) {
+      if (event.button !== undefined && event.button !== 0) return;
+      const badge = event.currentTarget;
+      if (badge.classList.contains("placed")) return;
+      const ghost = badge.cloneNode(true);
+      ghost.classList.add("drag-ghost");
+      document.body.appendChild(ghost);
+      activeDrag = { badge, ghost, type: badge.dataset.type };
+      moveGhost(event.clientX, event.clientY);
+      badge.style.opacity = "0.35";
+      window.addEventListener("pointermove", movePointerDrag);
+      window.addEventListener("pointerup", endPointerDrag, { once: true });
     }
 
-    function closeStoryPage() {
-      if (!storyScreen.classList.contains("show")) return;
-      const action = storyAction;
-      storyAction = null;
-      storyScreen.classList.add("fade");
-
-      window.setTimeout(() => {
-        storyScreen.classList.remove("show", "fade");
-        if (action) action();
-      }, 460);
+    function movePointerDrag(event) {
+      if (!activeDrag) return;
+      moveGhost(event.clientX, event.clientY);
     }
 
-    function makeCertBadge(cert) {
-      const badge = document.createElement("div");
-      badge.className = "cert";
-      badge.draggable = true;
-      badge.dataset.type = cert.type;
-      badge.innerHTML = `<span class="emoji">${cert.emoji}</span><span>${cert.name}</span>`;
-
-      badge.addEventListener("dragstart", (event) => {
-        event.dataTransfer.setData("text/plain", cert.type);
-        event.dataTransfer.effectAllowed = "move";
-        badge.classList.add("dragging");
-      });
-
-      badge.addEventListener("dragend", () => {
-        badge.classList.remove("dragging");
-      });
-
-      badge.addEventListener("touchstart", beginTouchDrag, { passive: false });
-      return badge;
+    function moveGhost(x, y) {
+      activeDrag.ghost.style.left = `${x}px`;
+      activeDrag.ghost.style.top = `${y}px`;
     }
 
-    function renderBag() {
-      bag.innerHTML = "";
-      slots.forEach((slot) => {
-        slot.classList.remove("filled", "over", "wrong");
-        const label = slot.querySelector(".slot-label").textContent;
-        const hint = slot.querySelector(".slot-hint").textContent;
-        slot.innerHTML = `<span class="slot-label">${label}</span><span class="slot-hint">${hint}</span>`;
-      });
+    function endPointerDrag(event) {
+      if (!activeDrag) return;
+      const { badge, ghost, type } = activeDrag;
+      ghost.remove();
+      badge.style.opacity = "";
+      const target = document.elementFromPoint(event.clientX, event.clientY);
+      const slot = target && target.closest ? target.closest(".slot") : null;
+      if (slot) tryPlace(type, slot, badge);
+      activeDrag = null;
+      window.removeEventListener("pointermove", movePointerDrag);
+    }
 
-      const owned = certs.filter(hasCert);
-      if (owned.length === 0) {
-        bag.innerHTML = `<span class="empty-bag">目前還沒有憑證，先去完成關卡吧。</span>`;
+    function tryPlace(type, slot, badge) {
+      if (!badge || badge.classList.contains("placed")) return;
+      if (slot.dataset.type !== type) {
+        slot.classList.remove("wrong");
+        void slot.offsetWidth;
+        slot.classList.add("wrong");
         return;
       }
-
-      owned.forEach((cert) => bag.appendChild(makeCertBadge(cert)));
-    }
-
-    function flashWrong(slot) {
-      slot.classList.remove("wrong");
-      window.setTimeout(() => slot.classList.add("wrong"), 0);
-      window.setTimeout(() => slot.classList.remove("wrong"), 360);
-    }
-
-    function placeCert(type, slot, badge) {
-      if (slot.classList.contains("filled") || slot.dataset.slot !== type) {
-        flashWrong(slot);
-        return false;
-      }
-
-      slot.classList.add("filled");
+      slot.classList.add("correct");
       slot.innerHTML = "";
-      badge.classList.remove("dragging");
       badge.classList.add("placed");
-      badge.draggable = false;
+      badge.setAttribute("draggable", "false");
       slot.appendChild(badge);
-      checkDoorComplete();
-      return true;
+      placed.set(type, true);
+      if (placed.size === certs.length) showComplete();
     }
 
-    function checkDoorComplete() {
-      const allFilled = slots.every((slot) => slot.classList.contains("filled"));
-      if (!allFilled) return;
-
-      showAdventureComplete();
-    }
-
-    function showAdventureComplete() {
+    function showComplete() {
+      fadeEndingMusic();
+      stopNarration();
+      els.gateGame.classList.add("hide");
+      els.completeView.classList.add("show");
       const elapsed = Math.max(0, Date.now() - Number(localStorage.getItem("adventure_start") || Date.now()));
       const totalSeconds = Math.floor(elapsed / 1000);
       const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, "0");
       const seconds = String(totalSeconds % 60).padStart(2, "0");
-      adventureTime.textContent = `總冒險時長：${minutes} 分 ${seconds} 秒`;
-      doorGame.style.display = "none";
-      completeView.classList.add("show");
+      els.timeText.textContent = `【冒險完成】\n總冒險時長：${minutes} 分 ${seconds} 秒`;
     }
 
-    function openDoorModal() {
-      if (allLevelsComplete()) {
-        showStoryPage("page5.png", "點擊完成冒險", () => {
-          modal.classList.add("show");
-          showAdventureComplete();
-        });
-        return;
-      }
-
-      renderBag();
-      doorGame.style.display = "block";
-      completeView.classList.remove("show");
-      modal.classList.add("show");
+    function clearProgress(clearSession) {
+      localStorage.clear();
+      if (clearSession) sessionStorage.clear();
+      initStartTime();
+      renderProgress();
+      renderGate();
     }
 
-    function clearAdventure(clearEverything = false) {
-      if (clearEverything) {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.reload();
-        return;
-      }
-
-      ["cert_dynasty", "cert_idiom", "cert_warrior", "cert_poetry", "adventure_start"].forEach((key) => localStorage.removeItem(key));
-      ensureStartTime();
-      refreshMap();
-      renderBag();
-      doorGame.style.display = "block";
-      completeView.classList.remove("show");
-    }
-
-    slots.forEach((slot) => {
-      slot.addEventListener("dragover", (event) => {
-        event.preventDefault();
-        slot.classList.add("over");
-      });
-
-      slot.addEventListener("dragleave", () => slot.classList.remove("over"));
-
-      slot.addEventListener("drop", (event) => {
-        event.preventDefault();
-        slot.classList.remove("over");
-        const type = event.dataTransfer.getData("text/plain");
-        const badge = document.querySelector(`.cert.dragging[data-type="${type}"]`);
-        if (badge) placeCert(type, slot, badge);
+    document.querySelectorAll(".hotspot").forEach(hotspot => {
+      hotspot.addEventListener("click", () => {
+        if (hotspot.dataset.action === "gate") {
+          showCutscene(4, { type: "gate" });
+          return;
+        }
+        const cert = certs[Number(hotspot.dataset.index)];
+        showCutscene(Number(hotspot.dataset.index), { type: "level", href: cert.href });
       });
     });
 
-    function getTouchPoint(event) {
-      return event.touches[0] || event.changedTouches[0];
+    els.cutscene.addEventListener("click", finishCutscene);
+
+    els.clearBtn.addEventListener("click", () => clearProgress(false));
+    els.closeModalBtn.addEventListener("click", () => els.gateModal.classList.remove("show"));
+    els.resetSlotsBtn.addEventListener("click", renderGate);
+    els.againBtn.addEventListener("click", () => {
+      clearProgress(true);
+      window.location.reload();
+    });
+    els.gateModal.addEventListener("click", event => {
+      if (event.target === els.gateModal) els.gateModal.classList.remove("show");
+    });
+
+    initStartTime();
+    initCover();
+    if ("speechSynthesis" in window) {
+      pickNarratorVoice();
+      window.speechSynthesis.addEventListener("voiceschanged", pickNarratorVoice);
     }
-
-    function beginTouchDrag(event) {
-      if (event.currentTarget.classList.contains("placed")) return;
-      event.preventDefault();
-      const point = getTouchPoint(event);
-      const ghost = event.currentTarget.cloneNode(true);
-      ghost.classList.add("drag-ghost");
-      document.body.appendChild(ghost);
-      touchDrag = {
-        type: event.currentTarget.dataset.type,
-        source: event.currentTarget,
-        ghost
-      };
-      moveGhost(point);
-    }
-
-    function moveGhost(point) {
-      if (!touchDrag || !point) return;
-      touchDrag.ghost.style.left = `${point.clientX}px`;
-      touchDrag.ghost.style.top = `${point.clientY}px`;
-    }
-
-    window.addEventListener("touchmove", (event) => {
-      if (!touchDrag) return;
-      event.preventDefault();
-      const point = getTouchPoint(event);
-      moveGhost(point);
-      slots.forEach((slot) => slot.classList.remove("over"));
-      const under = document.elementFromPoint(point.clientX, point.clientY);
-      const slot = under && under.closest(".slot");
-      if (slot) slot.classList.add("over");
-    }, { passive: false });
-
-    window.addEventListener("touchend", (event) => {
-      if (!touchDrag) return;
-      const point = getTouchPoint(event);
-      const under = point && document.elementFromPoint(point.clientX, point.clientY);
-      const slot = under && under.closest(".slot");
-      slots.forEach((item) => item.classList.remove("over"));
-      touchDrag.ghost.remove();
-      if (slot) placeCert(touchDrag.type, slot, touchDrag.source);
-      touchDrag = null;
-    });
-
-    window.addEventListener("touchcancel", () => {
-      if (!touchDrag) return;
-      touchDrag.ghost.remove();
-      touchDrag = null;
-      slots.forEach((slot) => slot.classList.remove("over"));
-    });
-
-    document.querySelector("#openDoor").addEventListener("click", openDoorModal);
-    storyScreen.addEventListener("click", closeStoryPage);
-    window.addEventListener("keydown", (event) => {
-      if ((event.key === "Enter" || event.key === " ") && storyScreen.classList.contains("show")) {
-        event.preventDefault();
-        closeStoryPage();
-      }
-    });
-    document.querySelector("#closeDoor").addEventListener("click", () => modal.classList.remove("show"));
-    document.querySelector("#clearProgress").addEventListener("click", () => clearAdventure());
-    document.querySelector("#again").addEventListener("click", () => clearAdventure(true));
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) modal.classList.remove("show");
-    });
-
-    ensureStartTime();
-    refreshMap();
+    renderProgress();
   </script>
 </body>
 </html>

@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大唐文字魔術師——唐詩填空大冒險</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --ink: #21180f;
+      --paper: #fff8e4;
+      --gold: #f4b83f;
+      --red: #d94d3d;
+      --green: #20956f;
+      --blue: #286ba8;
+      --violet: #68459b;
+      --line: rgba(54, 34, 16, 0.18);
+      --shadow: rgba(13, 10, 8, 0.25);
+    }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 12% 12%, rgba(244, 184, 63, 0.36), transparent 17rem),
+        radial-gradient(circle at 86% 8%, rgba(32, 149, 111, 0.28), transparent 18rem),
+        linear-gradient(135deg, #1c3150 0%, #241844 54%, #452318 100%);
+      min-height: 100vh;
+    }
+    button { color: inherit; font: inherit; }
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+    .topbar {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      color: #fff8e4;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.7rem, 4vw, 3.35rem);
+      line-height: 1.06;
+      letter-spacing: 0;
+      text-shadow: 0 3px 0 rgba(35, 20, 10, 0.6), 0 15px 30px rgba(0, 0, 0, 0.32);
+    }
+    .subtitle {
+      margin: 6px 0 0;
+      font-weight: 900;
+      color: rgba(255, 248, 228, 0.88);
+    }
+    .stats {
+      display: flex;
+      gap: 8px;
+      justify-content: end;
+      flex-wrap: wrap;
+    }
+    .stat {
+      min-width: 98px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255, 248, 228, 0.18);
+      border-radius: 8px;
+      background: rgba(9, 14, 26, 0.58);
+      color: #fff8e4;
+      font-weight: 950;
+      text-align: center;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+    }
+    .stage {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 14px;
+    }
+    .main, .side {
+      border: 1px solid rgba(255, 241, 188, 0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
+    }
+    .main {
+      min-height: 650px;
+      display: grid;
+      grid-template-rows: 245px 1fr;
+      background: var(--paper);
+    }
+    .art {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(22, 28, 42, 0.02), rgba(22, 28, 42, 0.42)),
+        linear-gradient(135deg, #99d9e2 0%, #ffe087 48%, #bf6d55 100%);
+    }
+    .moon {
+      position: absolute;
+      width: 88px;
+      height: 88px;
+      right: 58px;
+      top: 34px;
+      border-radius: 999px;
+      background: #fff3af;
+      box-shadow: 0 0 42px rgba(255, 239, 144, 0.9);
+    }
+    .scroll {
+      position: absolute;
+      left: 8%;
+      bottom: 26px;
+      width: 42%;
+      max-width: 360px;
+      height: 118px;
+      border-radius: 8px;
+      background:
+        repeating-linear-gradient(0deg, rgba(95, 55, 18, 0.08) 0 2px, transparent 2px 18px),
+        linear-gradient(90deg, #e8bd69, #fff3c2, #e8bd69);
+      border: 7px solid #8f4d26;
+      transform: rotate(-4deg);
+      box-shadow: 0 18px 26px rgba(0, 0, 0, 0.2);
+    }
+    .scroll::before, .scroll::after {
+      content: "";
+      position: absolute;
+      top: -18px;
+      width: 22px;
+      height: 154px;
+      border-radius: 999px;
+      background: #5c311b;
+    }
+    .scroll::before { left: -18px; }
+    .scroll::after { right: -18px; }
+    .monster {
+      position: absolute;
+      right: 11%;
+      bottom: 24px;
+      width: 136px;
+      height: 150px;
+      border-radius: 52% 48% 42% 58%;
+      background:
+        radial-gradient(circle at 34% 38%, #fff 0 7%, transparent 8%),
+        radial-gradient(circle at 66% 38%, #fff 0 7%, transparent 8%),
+        radial-gradient(circle at 34% 40%, #14121b 0 3%, transparent 4%),
+        radial-gradient(circle at 66% 40%, #14121b 0 3%, transparent 4%),
+        linear-gradient(160deg, #37304f, #111827);
+      box-shadow: 0 0 36px rgba(91, 80, 158, 0.75);
+      animation: wobble 2.5s ease-in-out infinite;
+    }
+    .monster::after {
+      content: "";
+      position: absolute;
+      left: 38px;
+      bottom: 35px;
+      width: 60px;
+      height: 18px;
+      border-radius: 0 0 999px 999px;
+      background: #ff8275;
+    }
+    .sparkles {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 28% 22%, #fffbe4 0 3px, transparent 4px),
+        radial-gradient(circle at 48% 35%, #fffbe4 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 22%, #fffbe4 0 3px, transparent 4px),
+        radial-gradient(circle at 82% 56%, #fffbe4 0 2px, transparent 3px);
+    }
+    .content {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      padding: 18px;
+    }
+    .badge {
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: #fff8e4;
+      background: var(--violet);
+      font-weight: 950;
+    }
+    .story {
+      margin: 0;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff0bd;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+    .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: rgba(33, 24, 15, 0.7);
+      font-weight: 900;
+    }
+    .poem {
+      margin: 0;
+      font-size: clamp(1.55rem, 3.3vw, 2.35rem);
+      line-height: 1.28;
+      letter-spacing: 0;
+    }
+    .blank {
+      display: inline-block;
+      min-width: 5.4em;
+      padding: 0 10px;
+      border-bottom: 4px solid var(--red);
+      color: var(--red);
+      text-align: center;
+    }
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .answer {
+      min-height: 72px;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid rgba(42, 30, 18, 0.16);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(67, 205, 220, 0.14), rgba(255, 250, 240, 0.9)),
+        #fffaf0;
+      cursor: pointer;
+      font-weight: 950;
+      text-align: left;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: inset 0 0 18px rgba(67, 205, 220, 0.12), 0 0 18px rgba(67, 205, 220, 0.08);
+    }
+    .answer:hover:not(:disabled), .answer:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(32, 149, 111, 0.76);
+      box-shadow: 0 10px 22px rgba(32, 149, 111, 0.14);
+      outline: none;
+    }
+    .answer:disabled { cursor: default; opacity: 0.7; }
+    .answer.hide { visibility: hidden; }
+    body.success-flash::before,
+    body.alarm-flash::before,
+    body.shop-flash::before,
+    body.boss-flash::before,
+    body.game-over-effect::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 18;
+      pointer-events: none;
+    }
+    body.success-flash::before {
+      background: radial-gradient(circle, rgba(255, 220, 82, 0.72), transparent 62%);
+      animation: flashOut 0.62s ease forwards;
+    }
+    body.alarm-flash::before {
+      background: rgba(217, 77, 61, 0.3);
+      animation: alarmBlink 0.48s linear 2 forwards;
+    }
+    body.shop-flash::before {
+      background: radial-gradient(circle at 50% 55%, rgba(67, 205, 220, 0.34), transparent 56%);
+      animation: flashOut 0.85s ease forwards;
+    }
+    body.boss-flash::before {
+      background: linear-gradient(180deg, rgba(0,0,0,0.72) 0 11%, transparent 11% 89%, rgba(0,0,0,0.72) 89% 100%), rgba(217, 77, 61, 0.16);
+      animation: alarmBlink 0.6s linear 2 forwards;
+    }
+    body.game-over-effect .app {
+      animation: gameOverShake 0.3s linear, slowFade 1.35s ease 0.3s forwards;
+    }
+    .key {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: #fff8e4;
+      background: var(--blue);
+    }
+    .feedback {
+      min-height: 78px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f6ead4;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .primary, .ghost, .tool {
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 950;
+    }
+    .primary { color: #fff8e4; background: var(--green); }
+    .ghost { color: #fff8e4; background: #554082; }
+    .tool { color: var(--ink); background: #ffd65f; }
+    .primary:disabled, .ghost:disabled, .tool:disabled { opacity: 0.48; cursor: not-allowed; }
+    .side {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      background: rgba(255, 248, 228, 0.95);
+    }
+    .panel {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel h3 {
+      margin: 0 0 10px;
+      letter-spacing: 0;
+      font-size: 1.06rem;
+    }
+    .inkbar, .bossbar {
+      height: 18px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(33, 24, 15, 0.14);
+    }
+    .inkfill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #49c08d, #4da3dc);
+      transition: width 0.22s ease;
+    }
+    .bossfill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #ffd25a, #e94e3c);
+      transition: width 0.22s ease;
+    }
+    .map {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .place {
+      min-height: 42px;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fffaf0;
+      color: rgba(33, 24, 15, 0.54);
+      font-weight: 900;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+    .place.unlock {
+      color: #fff8e4;
+      background: #1f765f;
+      border-color: transparent;
+    }
+    .cards {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .card {
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: #fff8e4;
+      background: #8b5a23;
+      font-weight: 950;
+    }
+    .empty { color: rgba(33, 24, 15, 0.58); font-weight: 850; }
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(7, 9, 16, 0.72);
+    }
+    .modal.show { display: grid; }
+    .dialog {
+      width: min(590px, 100%);
+      padding: 20px;
+      border-radius: 8px;
+      background: #fff8e4;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+    }
+    .dialog h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.55rem, 5vw, 2.35rem);
+      letter-spacing: 0;
+    }
+    .dialog p {
+      margin: 0 0 14px;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+    .shop-list {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .shop-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff0c2;
+    }
+    .shop-item strong { display: block; margin-bottom: 4px; }
+    @keyframes wobble {
+      0%, 100% { transform: rotate(-3deg) scale(1); }
+      50% { transform: rotate(4deg) scale(1.05); }
+    }
+    @keyframes flashOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes alarmBlink {
+      0%, 100% { opacity: 0; }
+      20%, 70% { opacity: 1; }
+    }
+    @keyframes gameOverShake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-10px, 4px); }
+      40% { transform: translate(9px, -5px); }
+      60% { transform: translate(-7px, -3px); }
+      80% { transform: translate(6px, 4px); }
+    }
+    @keyframes slowFade {
+      to { opacity: 0.18; filter: blur(2px) saturate(0.7); }
+    }
+    @media (max-width: 920px) {
+      .topbar, .stage { grid-template-columns: 1fr; }
+      .stats { justify-content: start; }
+      .main { min-height: auto; grid-template-rows: 210px 1fr; }
+      .side { grid-template-rows: auto; }
+    }
+    @media (max-width: 640px) {
+      .app { padding: 10px; }
+      .answers, .map { grid-template-columns: 1fr; }
+      .scroll { width: 58%; left: 5%; }
+      .monster { right: 4%; width: 104px; height: 122px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>大唐文字魔術師——唐詩填空大冒險</h1>
+        <p class="subtitle">把被偷走的關鍵字填回詩句，收集黃金字卡！</p>
+      </div>
+      <div class="stats" aria-live="polite">
+        <div class="stat" id="inkStat">墨水 100</div>
+        <div class="stat" id="coinStat">魔術幣 0</div>
+        <div class="stat" id="qStat">第 1/50 題</div>
+      </div>
+    </header>
+
+    <section class="stage">
+      <section class="main" aria-label="遊戲區">
+        <div class="art" aria-hidden="true">
+          <div class="moon"></div>
+          <div class="scroll"></div>
+          <div class="monster"></div>
+          <div class="sparkles"></div>
+        </div>
+        <div class="content">
+          <span class="badge" id="levelBadge">第 1 關：長安啟程</span>
+          <p class="story" id="storyText">不好了！時空墨水怪把唐詩裡的關鍵字都偷走了，變成了一個個空白的（ ）。你是大唐最厲害的文字魔術師，請把正確字卡填回去！</p>
+          <div class="meta" id="meta"></div>
+          <h2 class="poem" id="poemLine"></h2>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback">第一張字卡正在發光。選 A、B、C 或 D 開始施法！</div>
+          <div class="controls">
+            <button class="primary" id="nextBtn" type="button" disabled>下一題</button>
+            <button class="tool" id="hintBtn" type="button">使用放大鏡</button>
+            <button class="tool" id="eraseBtn" type="button">使用橡皮擦</button>
+            <button class="ghost" id="restartBtn" type="button">重新開始</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="冒險狀態">
+        <div class="panel">
+          <h3>時空墨水值 <span id="inkText">100/100</span></h3>
+          <div class="inkbar"><div class="inkfill" id="inkFill"></div></div>
+        </div>
+        <div class="panel">
+          <h3>墨水怪 Boss HP <span id="bossText">50/50</span></h3>
+          <div class="bossbar"><div class="bossfill" id="bossFill"></div></div>
+        </div>
+        <div class="panel">
+          <h3>大唐地圖地標</h3>
+          <div class="map" id="map"></div>
+        </div>
+        <div class="panel">
+          <h3>黃金字卡</h3>
+          <div class="cards" id="cards"><span class="empty">還沒有字卡，先完成第一題！</span></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal show" id="startModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>文字魔術師，集合！</h2>
+      <p>時空墨水怪偷走了唐詩關鍵字！你有 100 點時空墨水值與 0 枚魔術幣。答對得 10 幣，答錯扣 20 墨水。每 5 題解鎖新地標，第 46 題開始挑戰墨水怪大 Boss！</p>
+      <button class="primary" id="startBtn" type="button">開始填空冒險</button>
+    </div>
+  </div>
+
+  <div class="modal" id="shopModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>大唐魔術道具店</h2>
+      <p id="shopIntro">掌櫃甩開袖子：「文字魔術師，要不要買點道具再出發？」</p>
+      <div class="shop-list">
+        <div class="shop-item">
+          <div><strong>放大鏡 20 魔術幣</strong>提供詩句白話文提示。</div>
+          <button class="tool" data-buy="hint" type="button">購買</button>
+        </div>
+        <div class="shop-item">
+          <div><strong>橡皮擦 30 魔術幣</strong>刪除一個絕對錯誤的干擾選項。</div>
+          <button class="tool" data-buy="erase" type="button">購買</button>
+        </div>
+        <div class="shop-item">
+          <div><strong>幸運草 40 魔術幣</strong>下一題答錯時免扣墨水值。</div>
+          <button class="tool" data-buy="clover" type="button">購買</button>
+        </div>
+        <div class="shop-item" id="reviveRow">
+          <div><strong>墨水復活 30 魔術幣</strong>墨水歸零時補充 40 點墨水。</div>
+          <button class="tool" data-buy="revive" type="button">購買</button>
+        </div>
+      </div>
+      <button class="primary" id="leaveShopBtn" type="button">離開商店</button>
+    </div>
+  </div>
+
+  <div class="modal" id="endModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>Game Over</h2>
+      <p id="endText"></p>
+      <button class="primary" id="endRestartBtn" type="button">重新開始</button>
+    </div>
+  </div>
+
+  <script>
+    const landmarks = ["長安城", "大明宮", "曲江池", "黃鶴樓", "寒山寺", "鹿柴山林", "楓橋古渡", "玉門關", "廬山瀑布", "墨水怪巢穴"];
+    const levelNames = ["長安啟程", "宮燈字謎", "曲江詩會", "黃鶴樓飛字", "寒山鐘聲", "山林墨影", "楓橋夜泊", "邊塞風沙", "瀑布銀河", "墨水怪大 Boss 戰"];
+    const questions = [
+      ["床前（　）光，疑是地上霜。", "明月", "白雲", "春風", "小雨", "床前有明亮的月光，好像地上結了霜。", "李白", "靜夜思"],
+      ["春眠不覺曉，處處聞（　）。", "啼鳥", "流水", "鐘聲", "風沙", "春天睡醒，到處都聽見鳥叫。", "孟浩然", "春曉"],
+      ["白日依山盡，（　）入海流。", "黃河", "長江", "小溪", "秋風", "太陽靠山落下，黃河奔向大海。", "王之渙", "登鸛雀樓"],
+      ["誰知盤中餐，粒粒皆（　）。", "辛苦", "香甜", "圓滿", "清涼", "飯粒得來不容易，每一粒都包含辛勞。", "李紳", "憫農"],
+      ["鵝鵝鵝，曲項向（　）歌。", "天", "山", "水", "花", "白鵝彎著脖子向天空唱歌。", "駱賓王", "詠鵝"],
+      ["空山不見人，但聞（　）響。", "人語", "馬蹄", "雨聲", "琴聲", "山裡看不見人，只聽到說話聲。", "王維", "鹿柴"],
+      ["好雨知時節，當春乃（　）。", "發生", "歸來", "飛去", "入夢", "春雨像知道時節一樣來到。", "杜甫", "春夜喜雨"],
+      ["秦時明月漢時關，萬里長征人未（　）。", "還", "眠", "笑", "看", "邊關遙遠，征人還沒有回家。", "王昌齡", "出塞"],
+      ["千山鳥飛絕，萬徑人蹤（　）。", "滅", "多", "明", "暖", "山路都沒有人影，景色非常寂靜。", "柳宗元", "江雪"],
+      ["碧玉妝成一樹高，萬條垂下綠（　）。", "絲絛", "雲霞", "珠簾", "竹葉", "柳條像綠色絲帶一樣垂下。", "賀知章", "詠柳"],
+      ["停車坐愛楓林晚，霜葉紅於二月（　）。", "花", "霞", "火", "燈", "秋天楓葉比二月花還紅。", "杜牧", "山行"],
+      ["孤帆遠影碧空盡，唯見長江（　）流。", "天際", "山外", "橋下", "夢裡", "船影消失，只看見長江流向天邊。", "李白", "黃鶴樓送孟浩然之廣陵"],
+      ["兩個黃鸝鳴翠柳，一行白鷺上（　）。", "青天", "高樓", "長安", "小船", "白鷺排成一行飛上藍天。", "杜甫", "絕句"],
+      ["獨在異鄉為異客，每逢佳節倍（　）。", "思親", "飲酒", "看山", "聽雨", "一到節日就更想念親人。", "王維", "九月九日憶山東兄弟"],
+      ["野火燒不盡，春風（　）又生。", "吹", "看", "追", "敲", "草被燒過，春風吹來又長出來。", "白居易", "賦得古原草送別"],
+      ["海內存知己，天涯若（　）。", "比鄰", "星河", "雲端", "遠山", "真正的朋友即使很遠也像鄰居。", "王勃", "送杜少府之任蜀州"],
+      ["葡萄美酒夜光杯，欲飲琵琶馬上（　）。", "催", "飛", "眠", "開", "正想飲酒，馬上的琵琶聲催促出征。", "王翰", "涼州詞"],
+      ["忽如一夜春風來，千樹萬樹（　）開。", "梨花", "桃花", "梅花", "荷花", "白雪像一夜之間開滿梨花。", "岑參", "白雪歌送武判官歸京"],
+      ["舊時王謝堂前燕，飛入尋常（　）家。", "百姓", "將軍", "詩人", "漁夫", "從前豪門的燕子飛進普通人家。", "劉禹錫", "烏衣巷"],
+      ["何當共剪西窗燭，卻話巴山（　）時。", "夜雨", "春花", "秋月", "寒雪", "希望重逢時，一起談起巴山夜雨。", "李商隱", "夜雨寄北"],
+      ["姑蘇城外寒山寺，夜半（　）到客船。", "鐘聲", "月光", "秋風", "漁火", "半夜寺院鐘聲傳到船上。", "張繼", "楓橋夜泊"],
+      ["誰言寸草心，報得三春（　）。", "暉", "雨", "雷", "雪", "小草般的心難以報答春陽般的母愛。", "孟郊", "遊子吟"],
+      ["莫愁前路無知己，天下誰人不識（　）。", "君", "山", "月", "花", "不要怕前路沒朋友，天下人都認識你。", "高適", "別董大"],
+      ["會當凌絕頂，一覽眾山（　）。", "小", "高", "青", "遠", "登上最高峰，所有山都顯得小。", "杜甫", "望岳"],
+      ["飛流直下三千尺，疑是銀河落（　）。", "九天", "人間", "江南", "長安", "瀑布像銀河從天上落下。", "李白", "望廬山瀑布"],
+      ["日照香爐生紫煙，遙看瀑布掛（　）。", "前川", "青天", "古寺", "孤城", "遠遠看瀑布像掛在山前。", "李白", "望廬山瀑布"],
+      ["月落烏啼霜滿天，江楓漁火對（　）。", "愁眠", "春眠", "客船", "寒山", "詩人伴著江邊燈火，帶著愁緒入眠。", "張繼", "楓橋夜泊"],
+      ["勸君更盡一杯酒，西出陽關無（　）。", "故人", "行人", "白雲", "春風", "出了陽關就很難再見老朋友。", "王維", "送元二使安西"],
+      ["獨坐幽篁裡，彈琴復（　）。", "長嘯", "讀書", "看花", "聽雨", "一個人在竹林裡彈琴高歌。", "王維", "竹里館"],
+      ["返景入深林，復照青苔（　）。", "上", "中", "下", "前", "夕陽返照進森林，又照在青苔上。", "王維", "鹿柴"],
+      ["小娃撐小艇，偷採白蓮（　）。", "回", "開", "眠", "飛", "小孩划著小船偷偷採白蓮回來。", "白居易", "池上"],
+      ["不解藏蹤跡，浮萍一道（　）。", "開", "圓", "香", "落", "小船經過，水面浮萍被分開。", "白居易", "池上"],
+      ["離離原上草，一歲一（　）枯榮。", "歲", "日", "春", "秋", "原野上的草一年一度枯萎又茂盛。", "白居易", "賦得古原草送別"],
+      ["少小離家老大回，鄉音無改鬢毛（　）。", "衰", "長", "香", "黑", "年少離鄉，老了回來，口音沒變但頭髮已白。", "賀知章", "回鄉偶書"],
+      ["兒童相見不相識，笑問客從何處（　）。", "來", "去", "看", "眠", "孩子不認識他，笑著問客人從哪來。", "賀知章", "回鄉偶書"],
+      ["黃沙百戰穿金甲，不破樓蘭終不（　）。", "還", "降", "眠", "看", "將士決心不打敗敵人就不回家。", "王昌齡", "從軍行"],
+      ["洛陽親友如相問，一片冰心在（　）。", "玉壺", "金杯", "青山", "白雲", "我的心像玉壺中的冰一樣清白。", "王昌齡", "芙蓉樓送辛漸"],
+      ["月黑雁飛高，單于夜（　）逃。", "遁", "笑", "歸", "眠", "黑夜中敵軍偷偷逃走。", "盧綸", "塞下曲"],
+      ["欲將輕騎逐，大雪滿弓（　）。", "刀", "馬", "旗", "城", "想率騎兵追擊，雪落滿弓刀。", "盧綸", "塞下曲"],
+      ["千里黃雲白日曛，北風吹雁雪（　）。", "紛紛", "悠悠", "沉沉", "青青", "北風吹著雁群，雪花紛飛。", "高適", "別董大"],
+      ["清明時節雨紛紛，路上行人欲斷（　）。", "魂", "橋", "雲", "夢", "清明細雨中，路人心情很悲傷。", "杜牧", "清明"],
+      ["借問酒家何處有，牧童遙指杏花（　）。", "村", "橋", "樓", "亭", "牧童遠遠指著杏花村。", "杜牧", "清明"],
+      ["銀燭秋光冷畫屏，輕羅小扇撲（　）。", "流螢", "飛燕", "落花", "白雪", "秋夜裡用小扇撲打飛舞的螢火蟲。", "杜牧", "秋夕"],
+      ["天階夜色涼如水，坐看牽牛（　）星。", "織女", "北斗", "長庚", "啟明", "夜色清涼，坐看牛郎織女星。", "杜牧", "秋夕"],
+      ["君問歸期未有期，巴山夜雨漲秋（　）。", "池", "江", "河", "海", "你問我何時回去，我還不知道，巴山夜雨漲滿秋池。", "李商隱", "夜雨寄北"],
+      ["墨水怪 Boss！春色滿園關不住，一枝紅杏出（　）來。", "牆", "門", "窗", "橋", "滿園春色擋不住，一枝紅杏伸出牆外。", "葉紹翁", "遊園不值"],
+      ["墨水怪 Boss！小荷才露尖尖角，早有蜻蜓立（　）頭。", "上", "水", "花", "橋", "小荷剛露出尖角，蜻蜓已停在上面。", "楊萬里", "小池"],
+      ["墨水怪 Boss！接天蓮葉無窮碧，映日荷花別樣（　）。", "紅", "白", "香", "高", "荷葉連天一片碧綠，荷花在陽光下格外紅。", "楊萬里", "曉出淨慈寺送林子方"],
+      ["墨水怪 Boss！欲窮千里目，更上一層（　）。", "樓", "山", "船", "橋", "想看得更遠，就再登上一層樓。", "王之渙", "登鸛雀樓"],
+      ["墨水怪 Boss！桃花潭水深千尺，不及汪倫送我（　）。", "情", "船", "詩", "酒", "桃花潭水再深，也比不上朋友送別的情誼。", "李白", "贈汪倫"]
+    ].map((item, index) => ({
+      id: index + 1,
+      line: item[0],
+      answer: item[1],
+      options: item.slice(1, 5),
+      hint: item[5],
+      author: item[6],
+      poem: item[7]
+    }));
+
+    const els = {
+      inkStat: document.getElementById("inkStat"),
+      coinStat: document.getElementById("coinStat"),
+      qStat: document.getElementById("qStat"),
+      levelBadge: document.getElementById("levelBadge"),
+      storyText: document.getElementById("storyText"),
+      meta: document.getElementById("meta"),
+      poemLine: document.getElementById("poemLine"),
+      answers: document.getElementById("answers"),
+      feedback: document.getElementById("feedback"),
+      nextBtn: document.getElementById("nextBtn"),
+      hintBtn: document.getElementById("hintBtn"),
+      eraseBtn: document.getElementById("eraseBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+      inkText: document.getElementById("inkText"),
+      inkFill: document.getElementById("inkFill"),
+      bossText: document.getElementById("bossText"),
+      bossFill: document.getElementById("bossFill"),
+      map: document.getElementById("map"),
+      cards: document.getElementById("cards"),
+      startModal: document.getElementById("startModal"),
+      startBtn: document.getElementById("startBtn"),
+      shopModal: document.getElementById("shopModal"),
+      shopIntro: document.getElementById("shopIntro"),
+      reviveRow: document.getElementById("reviveRow"),
+      leaveShopBtn: document.getElementById("leaveShopBtn"),
+      endModal: document.getElementById("endModal"),
+      endText: document.getElementById("endText"),
+      endRestartBtn: document.getElementById("endRestartBtn")
+    };
+
+    let state;
+
+    function newState() {
+      return {
+        index: 0,
+        ink: 100,
+        coins: 0,
+        bossHp: 50,
+        answered: false,
+        wrong: 0,
+        hints: 0,
+        erasers: 0,
+        clovers: 0,
+        purchases: 0,
+        usedEraser: false,
+        cards: []
+      };
+    }
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function levelIndex() {
+      return Math.floor(state.index / 5);
+    }
+
+    function pulseEffect(name) {
+      document.body.classList.remove("success-flash", "alarm-flash", "shop-flash", "boss-flash");
+      void document.body.offsetWidth;
+      document.body.classList.add(name);
+      setTimeout(() => document.body.classList.remove(name), 900);
+    }
+
+    function renderStats() {
+      els.inkStat.textContent = `墨水 ${Math.max(state.ink, 0)}`;
+      els.coinStat.textContent = `魔術幣 ${state.coins}`;
+      els.qStat.textContent = state.index < questions.length ? `第 ${state.index + 1}/50 題` : "通關";
+      els.inkText.textContent = `${Math.max(state.ink, 0)}/100`;
+      els.inkFill.style.width = `${Math.max(state.ink, 0)}%`;
+      els.bossText.textContent = `${Math.max(state.bossHp, 0)}/50`;
+      els.bossFill.style.width = `${Math.max(state.bossHp, 0) * 2}%`;
+      els.hintBtn.textContent = `使用放大鏡 x${state.hints}`;
+      els.eraseBtn.textContent = `使用橡皮擦 x${state.erasers}`;
+      els.hintBtn.disabled = state.hints <= 0 || state.answered;
+      els.eraseBtn.disabled = state.erasers <= 0 || state.answered || state.usedEraser;
+      renderMap();
+      renderCards();
+    }
+
+    function renderMap() {
+      const unlocked = Math.min(10, Math.floor(state.index / 5));
+      els.map.innerHTML = landmarks.map((name, i) => {
+        const active = i < unlocked || (i === levelIndex() && state.index < questions.length);
+        return `<div class="place ${active ? "unlock" : ""}">${active ? "已解鎖 " : "未解鎖 "}${name}</div>`;
+      }).join("");
+    }
+
+    function renderCards() {
+      if (state.cards.length === 0) {
+        els.cards.innerHTML = `<span class="empty">還沒有字卡，先完成第一題！</span>`;
+        return;
+      }
+      els.cards.innerHTML = state.cards.slice(-14).map(card => `<span class="card">${card}</span>`).join("");
+    }
+
+    function loadQuestion() {
+      state.answered = false;
+      state.usedEraser = false;
+      els.nextBtn.disabled = true;
+      const q = questions[state.index];
+      const lv = levelIndex();
+      if (state.index === 45) pulseEffect("boss-flash");
+      els.levelBadge.textContent = `第 ${lv + 1} 關：${levelNames[lv]}`;
+      els.storyText.textContent = state.index >= 45
+        ? "[🔊 轟隆隆！重低音史詩級魔王BGM進場！] 螢幕上下出現電影級黑邊，墨水怪巨大的像素雙眼在紅色風暴中睜開，防護罩發出綠色蜂巢狀脈衝光芒！"
+        : "時空墨水怪又偷走了一個關鍵字。請找出最適合的字卡，把詩句救回來！";
+      els.meta.innerHTML = `<span>作者：${q.author}</span><span>作品：${q.poem}</span><span>地標：${landmarks[lv]}</span>`;
+      els.poemLine.innerHTML = q.line.replace("（　）", `<span class="blank">（　）</span>`);
+      els.answers.innerHTML = "";
+      shuffle(q.options.map(text => ({ text, correct: text === q.answer }))).forEach((option, i) => {
+        const btn = document.createElement("button");
+        btn.className = "answer";
+        btn.type = "button";
+        btn.dataset.correct = option.correct ? "true" : "false";
+        btn.innerHTML = `<span class="key">${["A", "B", "C", "D"][i]}</span><span>${option.text}</span>`;
+        btn.addEventListener("click", () => answer(option.correct, q));
+        els.answers.appendChild(btn);
+      });
+      els.feedback.textContent = "字卡已經洗牌完成，請選出正確答案。";
+      renderStats();
+    }
+
+    function answer(correct, q) {
+      if (state.answered) return;
+      state.answered = true;
+      document.querySelectorAll(".answer").forEach(btn => {
+        btn.disabled = true;
+        if (btn.dataset.correct === "true") {
+          btn.style.borderColor = "rgba(32, 149, 111, 0.9)";
+          btn.style.background = "#dff7df";
+        }
+      });
+      if (correct) {
+        pulseEffect("success-flash");
+        state.coins += 10;
+        state.cards.push(q.answer);
+        let text = `[🔊 叮咚！鏘——！熱血古箏電音激昂響起！] 正確！螢幕瞬間閃爍金色光芒，【${q.answer}】字卡化作「3D立體水墨巨龍」盤旋衝出螢幕，炸裂成金色粒子！詩句「${q.line.replace("（　）", q.answer)}」回到唐詩卷軸裡，獲得 10 魔術幣！`;
+        if (state.index >= 45) {
+          state.bossHp -= 10;
+          text += " 墨水怪被文字光波打中，綠色蜂巢防護罩「喀啦」裂開，Boss HP 扣 10！";
+        }
+        els.feedback.textContent = text;
+      } else {
+        pulseEffect("alarm-flash");
+        state.wrong += 1;
+        if (state.clovers > 0) {
+          state.clovers -= 1;
+          els.feedback.textContent = `[🔊 嗶嗶——！咚——！電子雜音滋滋作響。] 墨水怪用假字騙了你，錯誤字卡像玻璃 Shatter 碎裂；幸運草爆出綠色護盾保護你，這次免扣墨水值！正確答案是【${q.answer}】。`;
+        } else {
+          state.ink -= 20;
+          els.feedback.textContent = `[🔊 嗶嗶——！低沉警報鐘聲「咚——」地敲響！] 墨水怪用假字騙了你，錯誤字卡化作黑煙並冒出「滋滋」電流火花。（　）裡應該填【${q.answer}】。墨水值減少 20，下一題精準施法！`;
+        }
+      }
+      renderStats();
+      if (state.bossHp <= 0) {
+        setTimeout(() => endGame(true), 450);
+        return;
+      }
+      if (state.ink <= 0) {
+        if (state.coins >= 30) openShop(true);
+        else setTimeout(() => endGame(false), 450);
+        return;
+      }
+      els.nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      state.index += 1;
+      if (state.index >= questions.length) {
+        endGame(true);
+        return;
+      }
+      if (state.index % 5 === 0) {
+        openShop(false);
+        return;
+      }
+      loadQuestion();
+    }
+
+    function openShop(reviveOnly) {
+      pulseEffect("shop-flash");
+      els.reviveRow.style.display = reviveOnly ? "grid" : "none";
+      els.shopIntro.textContent = reviveOnly
+        ? "[🔊 歡迎光臨！復古電子長安小曲響起] 墨水值歸零了！霓虹招牌「長安補給站」浮現，掌櫃端出復活墨水：「30 魔術幣補 40 點，還能繼續寫！」"
+        : `[🔊 歡迎光臨！復古電子長安小曲響起] 恭喜通過第 ${Math.floor(state.index / 5)} 關，解鎖【${landmarks[Math.floor(state.index / 5) - 1]}】！道具卡片像抽卡遊戲一樣閃閃發光，要進商店嗎？`;
+      els.shopModal.classList.add("show");
+    }
+
+    function buy(kind) {
+      const prices = { hint: 20, erase: 30, clover: 40, revive: 30 };
+      if (state.coins < prices[kind]) {
+        els.shopIntro.textContent = "掌櫃敲敲算盤：「魔術幣不夠喔，先去拯救更多詩句吧！」";
+        return;
+      }
+      state.coins -= prices[kind];
+      state.purchases += 1;
+      if (kind === "hint") {
+        state.hints += 1;
+        els.shopIntro.textContent = "放大鏡入袋！詩句意思會變清楚。";
+      }
+      if (kind === "erase") {
+        state.erasers += 1;
+        els.shopIntro.textContent = "橡皮擦入袋！干擾選項準備被擦掉。";
+      }
+      if (kind === "clover") {
+        state.clovers += 1;
+        els.shopIntro.textContent = "幸運草入袋！下一次失手也不怕。";
+      }
+      if (kind === "revive") {
+        state.ink = 40;
+        els.shopModal.classList.remove("show");
+        els.nextBtn.disabled = false;
+        els.feedback.textContent = "復活墨水注入成功！卷軸重新亮起，冒險繼續。";
+      }
+      renderStats();
+    }
+
+    function useHint() {
+      if (state.hints <= 0 || state.answered) return;
+      state.hints -= 1;
+      els.feedback.textContent = `放大鏡提示：${questions[state.index].hint}`;
+      renderStats();
+    }
+
+    function useEraser() {
+      if (state.erasers <= 0 || state.answered || state.usedEraser) return;
+      const wrong = Array.from(document.querySelectorAll(".answer")).filter(btn => btn.dataset.correct !== "true" && !btn.classList.contains("hide"));
+      const target = wrong[Math.floor(Math.random() * wrong.length)];
+      if (!target) return;
+      target.classList.add("hide");
+      state.erasers -= 1;
+      state.usedEraser = true;
+      els.feedback.textContent = "橡皮擦咻一聲，擦掉了一個絕對錯誤的干擾選項！";
+      renderStats();
+    }
+
+    function endGame(win) {
+      document.body.classList.add("game-over-effect");
+      let title = win ? "大唐文字魔術師" : "努力修行的文字學徒";
+      if (win && state.ink >= 80) title = "大唐一筆安天下．首席文字大師";
+      else if (state.purchases >= 3) title = "機智過人的道具收藏家";
+      else if (state.coins > 300) title = "長安第一文字富豪";
+      els.endText.textContent = win
+        ? `你成功拯救唐詩世界！稱號：【${title}】。剩餘墨水：${Math.max(state.ink, 0)}，魔術幣：${state.coins}，黃金字卡：${state.cards.length} 張。`
+        : `墨水暫時乾掉了，唐詩卷軸需要你再挑戰一次！稱號：【${title}】。魔術幣：${state.coins}，答錯：${state.wrong} 次。`;
+      els.endModal.classList.add("show");
+    }
+
+    function restart() {
+      document.body.classList.remove("game-over-effect", "success-flash", "alarm-flash", "shop-flash", "boss-flash");
+      state = newState();
+      els.endModal.classList.remove("show");
+      els.shopModal.classList.remove("show");
+      loadQuestion();
+    }
+
+    document.addEventListener("keydown", event => {
+      const key = event.key.toUpperCase();
+      if (!["A", "B", "C", "D"].includes(key) || state.answered) return;
+      const btn = document.querySelectorAll(".answer")[["A", "B", "C", "D"].indexOf(key)];
+      if (btn && !btn.classList.contains("hide")) btn.click();
+    });
+    els.startBtn.addEventListener("click", () => els.startModal.classList.remove("show"));
+    els.nextBtn.addEventListener("click", nextQuestion);
+    els.restartBtn.addEventListener("click", restart);
+    els.endRestartBtn.addEventListener("click", restart);
+    els.hintBtn.addEventListener("click", useHint);
+    els.eraseBtn.addEventListener("click", useEraser);
+    els.leaveShopBtn.addEventListener("click", () => {
+      els.shopModal.classList.remove("show");
+      loadQuestion();
+    });
+    document.querySelectorAll("[data-buy]").forEach(btn => btn.addEventListener("click", () => buy(btn.dataset.buy)));
+    restart();
+  </script>
+</body>
+</html>

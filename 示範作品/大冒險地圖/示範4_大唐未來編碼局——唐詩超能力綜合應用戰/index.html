@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大唐未來編碼局——唐詩超能力綜合應用戰</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --ink: #17202a;
+      --paper: #f8fbff;
+      --cyan: #27c7d9;
+      --green: #26a873;
+      --gold: #f3b642;
+      --red: #df4d52;
+      --violet: #6748b5;
+      --line: rgba(20, 36, 52, 0.16);
+      --shadow: rgba(6, 12, 24, 0.28);
+    }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(39, 199, 217, 0.35), transparent 17rem),
+        radial-gradient(circle at 86% 10%, rgba(243, 182, 66, 0.28), transparent 18rem),
+        linear-gradient(135deg, #0c1f36 0%, #211847 52%, #40211c 100%);
+      min-height: 100vh;
+    }
+    button { color: inherit; font: inherit; }
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+    .topbar {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      color: #f8fbff;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.62rem, 4vw, 3.2rem);
+      line-height: 1.06;
+      letter-spacing: 0;
+      text-shadow: 0 3px 0 rgba(16, 14, 18, 0.62), 0 16px 30px rgba(0, 0, 0, 0.34);
+    }
+    .subtitle {
+      margin: 6px 0 0;
+      color: rgba(248, 251, 255, 0.88);
+      font-weight: 900;
+    }
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: end;
+    }
+    .stat {
+      min-width: 104px;
+      padding: 9px 12px;
+      border: 1px solid rgba(248, 251, 255, 0.18);
+      border-radius: 8px;
+      color: #f8fbff;
+      background: rgba(5, 12, 25, 0.62);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+      font-weight: 950;
+      text-align: center;
+    }
+    .stage {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 14px;
+    }
+    .main, .side {
+      border: 1px solid rgba(202, 244, 255, 0.22);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
+    }
+    .main {
+      min-height: 660px;
+      display: grid;
+      grid-template-rows: 252px 1fr;
+      background: var(--paper);
+    }
+    .art {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(8, 16, 32, 0.05), rgba(8, 16, 32, 0.55)),
+        linear-gradient(135deg, #73d6e4 0%, #f8dc83 46%, #b26b74 100%);
+    }
+    .grid {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.18) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(transparent, black 20%, black 82%, transparent);
+    }
+    .portal {
+      position: absolute;
+      left: 9%;
+      bottom: 26px;
+      width: 176px;
+      height: 176px;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle, rgba(255,255,255,0.96) 0 10%, rgba(67, 225, 236, 0.85) 10% 28%, rgba(103, 72, 181, 0.75) 28% 44%, transparent 45%),
+        conic-gradient(from 20deg, #27c7d9, #f3b642, #df4d52, #6748b5, #27c7d9);
+      box-shadow: 0 0 42px rgba(39, 199, 217, 0.82), inset 0 0 28px rgba(255,255,255,0.72);
+      animation: spinPulse 4s linear infinite;
+    }
+    .tower {
+      position: absolute;
+      left: 40%;
+      bottom: 0;
+      width: 160px;
+      height: 206px;
+      background:
+        linear-gradient(90deg, transparent 0 14%, rgba(255,255,255,0.24) 14% 18%, transparent 18% 82%, rgba(255,255,255,0.24) 82% 86%, transparent 86%),
+        linear-gradient(180deg, #fff2b8 0 12%, #5b4bc0 12% 100%);
+      clip-path: polygon(50% 0, 72% 20%, 72% 38%, 90% 38%, 90% 100%, 10% 100%, 10% 38%, 28% 38%, 28% 20%);
+      filter: drop-shadow(0 20px 24px rgba(0,0,0,0.25));
+    }
+    .ai {
+      position: absolute;
+      right: 10%;
+      bottom: 24px;
+      width: 148px;
+      height: 148px;
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 35% 42%, #f8fbff 0 7%, transparent 8%),
+        radial-gradient(circle at 65% 42%, #f8fbff 0 7%, transparent 8%),
+        radial-gradient(circle at 35% 42%, #101827 0 3%, transparent 4%),
+        radial-gradient(circle at 65% 42%, #101827 0 3%, transparent 4%),
+        linear-gradient(160deg, #2dd4bf, #1f2a5a 65%, #141827);
+      box-shadow: 0 0 36px rgba(45, 212, 191, 0.75);
+      animation: hover 2.4s ease-in-out infinite;
+    }
+    .ai::before {
+      content: "AI";
+      position: absolute;
+      left: 50%;
+      top: 64%;
+      transform: translate(-50%, -50%);
+      color: #f8fbff;
+      font-weight: 950;
+      font-size: 1.4rem;
+    }
+    .content {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      padding: 18px;
+    }
+    .badge {
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: #f8fbff;
+      background: var(--violet);
+      font-weight: 950;
+    }
+    .story {
+      margin: 0;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #e9f8fb;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+    .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: rgba(23, 32, 42, 0.72);
+      font-weight: 900;
+    }
+    .question {
+      margin: 0;
+      font-size: clamp(1.45rem, 3vw, 2.18rem);
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .answer {
+      min-height: 78px;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid rgba(23, 32, 42, 0.16);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(39, 199, 217, 0.14), rgba(255, 255, 255, 0.88)),
+        #ffffff;
+      cursor: pointer;
+      font-weight: 950;
+      text-align: left;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: inset 0 0 18px rgba(39, 199, 217, 0.12), 0 0 18px rgba(39, 199, 217, 0.08);
+    }
+    .answer:hover:not(:disabled), .answer:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(39, 199, 217, 0.84);
+      box-shadow: 0 10px 22px rgba(39, 199, 217, 0.16);
+      outline: none;
+    }
+    .answer:disabled { cursor: default; opacity: 0.7; }
+    .answer.hide { visibility: hidden; }
+    body.success-flash::before,
+    body.alarm-flash::before,
+    body.shop-flash::before,
+    body.boss-flash::before,
+    body.game-over-effect::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 18;
+      pointer-events: none;
+    }
+    body.success-flash::before {
+      background: radial-gradient(circle, rgba(255, 222, 93, 0.7), transparent 62%);
+      animation: flashOut 0.62s ease forwards;
+    }
+    body.alarm-flash::before {
+      background: rgba(223, 77, 82, 0.28);
+      animation: alarmBlink 0.48s linear 2 forwards;
+    }
+    body.shop-flash::before {
+      background: radial-gradient(circle at 50% 55%, rgba(39, 199, 217, 0.34), transparent 56%);
+      animation: flashOut 0.85s ease forwards;
+    }
+    body.boss-flash::before {
+      background: linear-gradient(180deg, rgba(0,0,0,0.72) 0 11%, transparent 11% 89%, rgba(0,0,0,0.72) 89% 100%), rgba(223, 77, 82, 0.16);
+      animation: alarmBlink 0.6s linear 2 forwards;
+    }
+    body.game-over-effect .app {
+      animation: gameOverShake 0.3s linear, slowFade 1.35s ease 0.3s forwards;
+    }
+    .key {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: #f8fbff;
+      background: var(--blue, #2f6eaa);
+    }
+    .feedback {
+      min-height: 86px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f1f4fb;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .primary, .ghost, .tool {
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 950;
+    }
+    .primary { color: #f8fbff; background: var(--green); }
+    .ghost { color: #f8fbff; background: #4c3c83; }
+    .tool { color: var(--ink); background: #ffd45d; }
+    .primary:disabled, .ghost:disabled, .tool:disabled { opacity: 0.48; cursor: not-allowed; }
+    .side {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      background: rgba(248, 251, 255, 0.96);
+    }
+    .panel {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 1.06rem;
+      letter-spacing: 0;
+    }
+    .bar {
+      height: 18px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(23, 32, 42, 0.14);
+    }
+    .brainfill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #27c7d9, #26a873);
+      transition: width 0.22s ease;
+    }
+    .shieldfill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #ffd45d, #df4d52);
+      transition: width 0.22s ease;
+    }
+    .segments {
+      display: grid;
+      gap: 8px;
+    }
+    .segment {
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      color: rgba(23, 32, 42, 0.58);
+      font-weight: 900;
+    }
+    .segment.unlock {
+      color: #f8fbff;
+      background: #1f766c;
+      border-color: transparent;
+    }
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .chip {
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: #f8fbff;
+      background: #5c4ab0;
+      font-weight: 950;
+    }
+    .empty { color: rgba(23, 32, 42, 0.58); font-weight: 850; }
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(5, 9, 18, 0.74);
+    }
+    .modal.show { display: grid; }
+    .dialog {
+      width: min(610px, 100%);
+      padding: 20px;
+      border-radius: 8px;
+      background: #f8fbff;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.42);
+    }
+    .dialog h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.55rem, 5vw, 2.35rem);
+      letter-spacing: 0;
+    }
+    .dialog p {
+      margin: 0 0 14px;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+    .shop-list {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .shop-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #e9f8fb;
+    }
+    .shop-item strong { display: block; margin-bottom: 4px; }
+    @keyframes spinPulse {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.05); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    @keyframes flashOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes alarmBlink {
+      0%, 100% { opacity: 0; }
+      20%, 70% { opacity: 1; }
+    }
+    @keyframes gameOverShake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-10px, 4px); }
+      40% { transform: translate(9px, -5px); }
+      60% { transform: translate(-7px, -3px); }
+      80% { transform: translate(6px, 4px); }
+    }
+    @keyframes slowFade {
+      to { opacity: 0.18; filter: blur(2px) saturate(0.7); }
+    }
+    @keyframes hover {
+      0%, 100% { transform: translateY(0) rotate(-2deg); }
+      50% { transform: translateY(-9px) rotate(3deg); }
+    }
+    @media (max-width: 920px) {
+      .topbar, .stage { grid-template-columns: 1fr; }
+      .stats { justify-content: start; }
+      .main { min-height: auto; grid-template-rows: 210px 1fr; }
+      .side { grid-template-rows: auto; }
+    }
+    @media (max-width: 640px) {
+      .app { padding: 10px; }
+      .answers { grid-template-columns: 1fr; }
+      .portal { left: 5%; width: 120px; height: 120px; }
+      .tower { left: 34%; transform: scale(0.82); transform-origin: bottom center; }
+      .ai { right: 4%; width: 110px; height: 110px; }
+    }
+
+    .map-back {
+      position: fixed;
+      left: 14px;
+      top: 14px;
+      z-index: 40;
+      min-height: 40px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      color: #f8fbff;
+      background: rgba(8, 13, 25, 0.76);
+      border: 1px solid rgba(248, 251, 255, 0.2);
+      text-decoration: none;
+      font-weight: 950;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .voice-toggle {
+      position: fixed;
+      right: 14px;
+      top: 14px;
+      z-index: 40;
+      min-height: 40px;
+      padding: 9px 12px;
+      border: 1px solid rgba(248, 251, 255, 0.2);
+      border-radius: 8px;
+      color: #f8fbff;
+      background: rgba(8, 13, 25, 0.76);
+      cursor: pointer;
+      font-weight: 950;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .voice-toggle.on {
+      color: #122018;
+      background: #9af2bd;
+    }
+  </style>
+</head>
+<body>
+  <a class="map-back" href="../index.html">← 回到大地圖</a>
+  <button class="voice-toggle" id="voiceToggle" type="button">🔊 開啟語音</button>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>大唐未來編碼局——唐詩超能力綜合應用戰</h1>
+        <p class="subtitle">把唐詩變成精神超能力，解決現代生活任務！</p>
+      </div>
+      <div class="stats" aria-live="polite">
+        <div class="stat" id="brainStat">開發度 0%</div>
+        <div class="stat" id="coreStat">核心 5</div>
+        <div class="stat" id="chipStat">晶片 0</div>
+        <div class="stat" id="qStat">第 86 題</div>
+      </div>
+    </header>
+
+    <section class="stage">
+      <section class="main" aria-label="唐詩超能力綜合應用遊戲區">
+        <div class="art" aria-hidden="true">
+          <div class="grid"></div>
+          <div class="portal"></div>
+          <div class="tower"></div>
+          <div class="ai"></div>
+        </div>
+        <div class="content">
+          <span class="badge" id="levelBadge">能量區段 1：生活情境啟動</span>
+          <p class="story" id="storyText">歡迎來到「大唐未來編碼局」！每一句唐詩都是一種精神超能力。請發射正確唐詩編碼，幫現代人解決想家、需要鼓勵、表達感謝等難題。</p>
+          <div class="meta" id="meta"></div>
+          <h2 class="question" id="question"></h2>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback">系統啟動完成。請選 A、B、C 或 D，發射第一道唐詩編碼！</div>
+          <div class="controls">
+            <button class="primary" id="nextBtn" type="button" disabled>下一題</button>
+            <button class="tool" id="scanBtn" type="button">使用思維導圖掃描</button>
+            <button class="tool" id="noiseBtn" type="button">使用數據除噪器</button>
+            <button class="ghost" id="restartBtn" type="button">重新開始</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="系統狀態">
+        <div class="panel">
+          <h3>大腦開發度 <span id="brainText">0%</span></h3>
+          <div class="bar"><div class="brainfill" id="brainFill"></div></div>
+        </div>
+        <div class="panel">
+          <h3>AI-Alpha 防護罩 <span id="shieldText">50/50</span></h3>
+          <div class="bar"><div class="shieldfill" id="shieldFill"></div></div>
+        </div>
+        <div class="panel">
+          <h3>能量區段</h3>
+          <div class="segments" id="segments"></div>
+        </div>
+        <div class="panel">
+          <h3>已解鎖編碼</h3>
+          <div class="chips" id="codes"><span class="empty">尚未解鎖，先完成第一個任務！</span></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal show" id="startModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>時空策劃師，登入！</h2>
+      <p>你的初始大腦開發度是 0%，擁有 5 個能量核心與 0 枚編碼晶片。答對一題開發度提升 7%，並獲得 20 晶片；答錯扣 1 核心。第 96 題開始，終極人工智能 AI-Alpha 會啟動 50 點防護罩。</p>
+      <button class="primary" id="startBtn" type="button">開始編碼任務</button>
+    </div>
+  </div>
+
+  <div class="modal" id="shopModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>時空編碼補給站</h2>
+      <p id="shopIntro">補給站亮起藍色光圈：「要不要下載修正程式，讓下一段任務更穩？」</p>
+      <div class="shop-list">
+        <div class="shop-item">
+          <div><strong>思維導圖掃描 20 晶片</strong>用小學生聽得懂的生活例子提示詩句應用場景。</div>
+          <button class="tool" data-buy="scan" type="button">購買</button>
+        </div>
+        <div class="shop-item">
+          <div><strong>數據除噪器 30 晶片</strong>排除一個跟情境完全不搭的搞笑干擾選項。</div>
+          <button class="tool" data-buy="noise" type="button">購買</button>
+        </div>
+        <div class="shop-item">
+          <div><strong>防禦防火牆 40 晶片</strong>下一題若答錯，不會扣除能量核心。</div>
+          <button class="tool" data-buy="wall" type="button">購買</button>
+        </div>
+        <div class="shop-item" id="repairRow">
+          <div><strong>系統修復 40 晶片</strong>核心歸零時修復 2 個能量核心。</div>
+          <button class="tool" data-buy="repair" type="button">購買</button>
+        </div>
+      </div>
+      <button class="primary" id="leaveShopBtn" type="button">離開補給站</button>
+    </div>
+  </div>
+
+  <div class="modal" id="endModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>Game Over</h2>
+      <p id="endText"></p>
+      <button class="primary" id="endRestartBtn" type="button">重新開始</button>
+    </div>
+  </div>
+
+  <script>
+    const segments = [
+      "能量區段 1：生活情境啟動",
+      "能量區段 2：跨情境編碼",
+      "能量區段 3：AI-Alpha 高階考驗"
+    ];
+    const questions = [
+      ["86", "小安第一次離家參加營隊，晚上看著月亮很想家。最適合發射哪一句唐詩超能力？", "舉頭望明月，低頭思故鄉。", "停車坐愛楓林晚，霜葉紅於二月花。", "欲窮千里目，更上一層樓。", "白毛浮綠水，紅掌撥清波。", "想家時，月亮常像一條連回故鄉的光線。", "思鄉月光波"],
+      ["87", "同學覺得自己考不好就永遠沒希望了，你想鼓勵他再努力。哪句最適合？", "野火燒不盡，春風吹又生。", "千山鳥飛絕，萬徑人蹤滅。", "姑蘇城外寒山寺，夜半鐘聲到客船。", "誰知盤中餐，粒粒皆辛苦。", "失敗後還能再站起來，就像小草春風吹又生。", "希望重生碼"],
+      ["88", "你想感謝老師每天辛苦教大家，哪句最能提醒大家懂得珍惜辛勞？", "誰知盤中餐，粒粒皆辛苦。", "飛流直下三千尺，疑是銀河落九天。", "孤帆遠影碧空盡，唯見長江天際流。", "春眠不覺曉，處處聞啼鳥。", "珍惜成果時，要想到背後有很多努力。", "感恩辛勞碼"],
+      ["89", "朋友要轉學了，你想表達就算距離遠，友情仍然靠近。哪句最合適？", "海內存知己，天涯若比鄰。", "千樹萬樹梨花開。", "碧玉妝成一樹高。", "月黑雁飛高，單于夜遁逃。", "真正的好朋友不會因距離而變遠。", "友情連線碼"],
+      ["90", "班上準備登山，有人覺得站高一點能看得更遠。你會發射哪句？", "欲窮千里目，更上一層樓。", "不知細葉誰裁出。", "路上行人欲斷魂。", "江楓漁火對愁眠。", "想看更遠，就要往更高處前進，也像努力進步。", "登高視野碼"],
+      ["91", "校隊比賽前，大家需要一種堅定、不退縮的氣勢。哪句最能啟動鬥志？", "黃沙百戰穿金甲，不破樓蘭終不還。", "春眠不覺曉，處處聞啼鳥。", "小荷才露尖尖角。", "遙知兄弟登高處。", "面對挑戰時，這句有堅決完成任務的力量。", "壯志衝鋒碼"],
+      ["92", "美術課要畫冬天大雪，老師希望畫面有驚奇想像力。哪句最適合當靈感？", "忽如一夜春風來，千樹萬樹梨花開。", "勸君更盡一杯酒。", "兒童相見不相識。", "粒粒皆辛苦。", "把白雪想成梨花盛開，想像力瞬間升級。", "雪花想像碼"],
+      ["93", "同學因為離別哭得很傷心，你想用比較豁達的方式安慰他。哪句最適合？", "海內存知己，天涯若比鄰。", "獨釣寒江雪。", "夜半鐘聲到客船。", "萬徑人蹤滅。", "好朋友就算分開，心也可以很近。", "豁達離別碼"],
+      ["94", "自然課觀察柳樹，大家驚訝柳葉好像被剪出來。哪句能精準連結？", "不知細葉誰裁出，二月春風似剪刀。", "欲飲琵琶馬上催。", "報得三春暉。", "巴山夜雨漲秋池。", "春風像剪刀，是觀察自然加上想像的好例子。", "春風觀察碼"],
+      ["95", "母親節卡片想寫母愛很偉大，孩子很難完全報答。哪句最適合？", "誰言寸草心，報得三春暉。", "白日依山盡，黃河入海流。", "醉臥沙場君莫笑。", "輕羅小扇撲流螢。", "小草報答不了春陽，就像孩子難以完全報答母愛。", "母愛感謝碼"],
+      ["96", "AI-Alpha 題：如果要設計一張「努力升級」海報，下列哪組詩句最能一起使用？", "欲窮千里目，更上一層樓。／會當凌絕頂，一覽眾山小。", "月落烏啼霜滿天。／低頭思故鄉。", "白毛浮綠水。／紅掌撥清波。", "清明時節雨紛紛。／路上行人欲斷魂。", "兩句都和登高、視野、追求更好有關。", "超腦升級碼"],
+      ["97", "AI-Alpha 題：要安慰遠方朋友「距離不會切斷感情」，哪組最合適？", "海內存知己，天涯若比鄰。／但願人長久，千里共嬋娟。", "千山鳥飛絕。／萬徑人蹤滅。", "黃沙百戰穿金甲。／不破樓蘭終不還。", "碧玉妝成一樹高。／萬條垂下綠絲絛。", "兩句都表示人相隔很遠，心意仍能連在一起。", "遠距友情碼"],
+      ["98", "AI-Alpha 題：學校推廣環境教育，想表達生命力與自然復甦，哪組最好？", "野火燒不盡，春風吹又生。／春色滿園關不住，一枝紅杏出牆來。", "古來征戰幾人回。／萬里長征人未還。", "孤帆遠影碧空盡。／夜半鐘聲到客船。", "醉臥沙場君莫笑。／欲飲琵琶馬上催。", "小草再生、紅杏出牆，都表現自然生命力。", "生命復甦碼"],
+      ["99", "AI-Alpha 題：要做一個「感恩行動」企劃，哪組最能提醒大家珍惜付出？", "誰知盤中餐，粒粒皆辛苦。／誰言寸草心，報得三春暉。", "飛流直下三千尺。／千樹萬樹梨花開。", "停車坐愛楓林晚。／霜葉紅於二月花。", "月黑雁飛高。／單于夜遁逃。", "一組感謝勞動，一組感謝母愛，都能推動感恩行動。", "感恩企劃碼"],
+      ["100", "AI-Alpha 最終題：有人失敗後想放棄、又覺得自己看不到未來，你會組合哪兩種唐詩超能力？", "野火燒不盡，春風吹又生。／欲窮千里目，更上一層樓。", "孤舟蓑笠翁。／獨釣寒江雪。", "姑蘇城外寒山寺。／夜半鐘聲到客船。", "清明時節雨紛紛。／路上行人欲斷魂。", "先用小草重生鼓勵他不要放棄，再用登樓視野幫他看見下一步。", "終極超腦碼"]
+    ].map(row => ({
+      no: row[0],
+      question: row[1],
+      answer: row[2],
+      options: row.slice(2, 6),
+      hint: row[6],
+      code: row[7]
+    }));
+
+    const els = {
+      brainStat: document.getElementById("brainStat"),
+      coreStat: document.getElementById("coreStat"),
+      chipStat: document.getElementById("chipStat"),
+      qStat: document.getElementById("qStat"),
+      levelBadge: document.getElementById("levelBadge"),
+      storyText: document.getElementById("storyText"),
+      meta: document.getElementById("meta"),
+      question: document.getElementById("question"),
+      answers: document.getElementById("answers"),
+      feedback: document.getElementById("feedback"),
+      nextBtn: document.getElementById("nextBtn"),
+      scanBtn: document.getElementById("scanBtn"),
+      noiseBtn: document.getElementById("noiseBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+      brainText: document.getElementById("brainText"),
+      brainFill: document.getElementById("brainFill"),
+      shieldText: document.getElementById("shieldText"),
+      shieldFill: document.getElementById("shieldFill"),
+      segments: document.getElementById("segments"),
+      codes: document.getElementById("codes"),
+      startModal: document.getElementById("startModal"),
+      startBtn: document.getElementById("startBtn"),
+      shopModal: document.getElementById("shopModal"),
+      shopIntro: document.getElementById("shopIntro"),
+      repairRow: document.getElementById("repairRow"),
+      leaveShopBtn: document.getElementById("leaveShopBtn"),
+      endModal: document.getElementById("endModal"),
+      endText: document.getElementById("endText"),
+      endRestartBtn: document.getElementById("endRestartBtn")
+    };
+
+    let state;
+
+    function freshState() {
+      return {
+        index: 0,
+        brain: 0,
+        cores: 5,
+        chips: 0,
+        shield: 50,
+        answered: false,
+        scans: 0,
+        noises: 0,
+        walls: 0,
+        scanUses: 0,
+        usedNoise: false,
+        codes: []
+      };
+    }
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function segmentIndex() {
+      return Math.floor(state.index / 5);
+    }
+
+    function pulseEffect(name) {
+      document.body.classList.remove("success-flash", "alarm-flash", "shop-flash", "boss-flash");
+      void document.body.offsetWidth;
+      document.body.classList.add(name);
+      setTimeout(() => document.body.classList.remove(name), 900);
+    }
+
+    function renderStats() {
+      els.brainStat.textContent = `開發度 ${Math.min(state.brain, 100)}%`;
+      els.coreStat.textContent = `核心 ${Math.max(state.cores, 0)}`;
+      els.chipStat.textContent = `晶片 ${state.chips}`;
+      els.qStat.textContent = state.index < questions.length ? `第 ${questions[state.index].no} 題` : "通關";
+      els.brainText.textContent = `${Math.min(state.brain, 100)}%`;
+      els.brainFill.style.width = `${Math.min(state.brain, 100)}%`;
+      els.shieldText.textContent = `${Math.max(state.shield, 0)}/50`;
+      els.shieldFill.style.width = `${Math.max(state.shield, 0) * 2}%`;
+      els.scanBtn.textContent = `使用思維導圖掃描 x${state.scans}`;
+      els.noiseBtn.textContent = `使用數據除噪器 x${state.noises}`;
+      els.scanBtn.disabled = state.scans <= 0 || state.answered;
+      els.noiseBtn.disabled = state.noises <= 0 || state.answered || state.usedNoise;
+      renderSegments();
+      renderCodes();
+    }
+
+    function renderSegments() {
+      const unlocked = Math.min(3, Math.floor(state.index / 5));
+      els.segments.innerHTML = segments.map((name, i) => {
+        const active = i < unlocked || (i === segmentIndex() && state.index < questions.length);
+        return `<div class="segment ${active ? "unlock" : ""}">${active ? "已啟動 " : "待啟動 "}${name}</div>`;
+      }).join("");
+    }
+
+    function renderCodes() {
+      if (state.codes.length === 0) {
+        els.codes.innerHTML = `<span class="empty">尚未解鎖，先完成第一個任務！</span>`;
+        return;
+      }
+      els.codes.innerHTML = state.codes.map(code => `<span class="chip">${code}</span>`).join("");
+    }
+
+    function loadQuestion() {
+      state.answered = false;
+      state.usedNoise = false;
+      els.nextBtn.disabled = true;
+      const q = questions[state.index];
+      const boss = state.index >= 10;
+      if (state.index === 10) pulseEffect("boss-flash");
+      els.levelBadge.textContent = segments[segmentIndex()];
+      els.storyText.textContent = boss
+        ? "[🔊 轟隆隆！重低音史詩級魔王BGM進場！] 螢幕上下出現電影級黑邊，AI-Alpha 巨大的像素雙眼在紅色風暴中睜開，綠色蜂巢防護罩發出脈衝光芒！第 96～100 題都是跨文本綜合應用。"
+        : "現代生活任務傳來了。請分析情境，選出最能解決問題的唐詩超能力編碼。";
+      els.meta.innerHTML = `<span>題號：${q.no}</span><span>任務模式：${boss ? "AI-Alpha 高階考驗" : "生活應用解碼"}</span>`;
+      els.question.textContent = q.question;
+      els.answers.innerHTML = "";
+      shuffle(q.options.map(text => ({ text, correct: text === q.answer }))).forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.type = "button";
+        button.dataset.correct = option.correct ? "true" : "false";
+        button.innerHTML = `<span class="key">${["A", "B", "C", "D"][index]}</span><span>${option.text}</span>`;
+        button.addEventListener("click", () => answer(option.correct, q));
+        els.answers.appendChild(button);
+      });
+      els.feedback.textContent = "選項已完全洗牌。請微調大腦迴路，選出最精準的唐詩編碼。";
+      renderStats();
+    }
+
+    function answer(correct, q) {
+      if (state.answered) return;
+      state.answered = true;
+      document.querySelectorAll(".answer").forEach(button => {
+        button.disabled = true;
+        if (button.dataset.correct === "true") {
+          button.style.borderColor = "rgba(38, 168, 115, 0.92)";
+          button.style.background = "#ddf7ea";
+        }
+      });
+      if (correct) {
+        pulseEffect("success-flash");
+        state.brain = Math.min(100, state.brain + 7);
+        state.chips += 20;
+        state.codes.push(q.code);
+        let text = `[🔊 叮咚！鏘——！熱血古箏電音激昂響起！] 解碼成功！螢幕瞬間閃爍金色光芒，【${q.answer}】的代碼化作「3D立體水墨巨龍」盤旋衝出螢幕，又炸裂成無數金色粒子！【${q.code}】啟動，現代任務被精準解決，大腦開發度轟鳴提升 7%，獲得 20 編碼晶片！`;
+        if (state.index >= 10) {
+          state.shield -= 10;
+          text += " AI-Alpha 的綠色蜂巢防護罩「喀啦」裂開，防護罩被打破 10 點！";
+        }
+        els.feedback.textContent = text;
+      } else {
+        pulseEffect("alarm-flash");
+        if (state.walls > 0) {
+          state.walls -= 1;
+          els.feedback.textContent = `[🔊 嗶嗶——！咚——！電子雜音滋滋作響。] 編碼錯誤！錯誤詩句像玻璃一樣 Shatter 碎裂，但防禦防火牆彈出藍色護盾攔截警報，能量核心沒有受損。正確編碼是【${q.answer}】。`;
+        } else {
+          state.cores -= 1;
+          els.feedback.textContent = `[🔊 嗶嗶——！低沉警報鐘聲「咚——」地敲響！] 系統代碼產生排斥！錯誤的詩句超能力化作黑煙，冒出「滋滋」電流火花，能量核心發出裂開脆響。正確編碼是【${q.answer}】。能量核心減少 1 個，重新微調你的大腦迴路！`;
+        }
+      }
+      renderStats();
+      if (state.shield <= 0) {
+        setTimeout(() => endGame(true), 450);
+        return;
+      }
+      if (state.cores <= 0) {
+        if (state.chips >= 40) openShop(true);
+        else setTimeout(() => endGame(false), 450);
+        return;
+      }
+      els.nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      state.index += 1;
+      if (state.index >= questions.length) {
+        endGame(true);
+        return;
+      }
+      if (state.index % 5 === 0) {
+        openShop(false);
+        return;
+      }
+      loadQuestion();
+    }
+
+    function openShop(repairOnly) {
+      pulseEffect("shop-flash");
+      els.repairRow.style.display = repairOnly ? "grid" : "none";
+      els.shopIntro.textContent = repairOnly
+        ? "[🔊 歡迎光臨！復古電子長安小曲響起] 系統當機警報！霓虹招牌「長安補給站」浮現，補給站提供 40 晶片修復 2 個能量核心。"
+        : `[🔊 歡迎光臨！復古電子長安小曲響起] 你完成第 ${Math.floor(state.index / 5)} 個能量區段！霓虹招牌「長安補給站」浮現，道具卡片像抽卡遊戲一樣閃閃發光。要下載修正程式嗎？`;
+      els.shopModal.classList.add("show");
+    }
+
+    function buy(kind) {
+      const price = { scan: 20, noise: 30, wall: 40, repair: 40 }[kind];
+      if (state.chips < price) {
+        els.shopIntro.textContent = "補給站提示：「晶片不足，請完成更多任務再回來下載。」";
+        return;
+      }
+      state.chips -= price;
+      if (kind === "scan") {
+        state.scans += 1;
+        els.shopIntro.textContent = "思維導圖掃描已下載！生活情境會變得更清楚。";
+      }
+      if (kind === "noise") {
+        state.noises += 1;
+        els.shopIntro.textContent = "數據除噪器已下載！搞笑干擾選項準備被排除。";
+      }
+      if (kind === "wall") {
+        state.walls += 1;
+        els.shopIntro.textContent = "防禦防火牆已啟動！下一次答錯不扣核心。";
+      }
+      if (kind === "repair") {
+        state.cores = 2;
+        els.shopModal.classList.remove("show");
+        els.nextBtn.disabled = false;
+        els.feedback.textContent = "系統修復成功！能量核心恢復 2 個，編碼任務繼續。";
+      }
+      renderStats();
+    }
+
+    function useScan() {
+      if (state.scans <= 0 || state.answered) return;
+      state.scans -= 1;
+      state.scanUses += 1;
+      els.feedback.textContent = `思維導圖掃描：${questions[state.index].hint}`;
+      renderStats();
+    }
+
+    function useNoise() {
+      if (state.noises <= 0 || state.answered || state.usedNoise) return;
+      const wrong = Array.from(document.querySelectorAll(".answer")).filter(button => button.dataset.correct !== "true" && !button.classList.contains("hide"));
+      const target = wrong[Math.floor(Math.random() * wrong.length)];
+      if (!target) return;
+      target.classList.add("hide");
+      state.noises -= 1;
+      state.usedNoise = true;
+      els.feedback.textContent = "數據除噪器啟動！一個完全不搭情境的干擾選項被系統排除了。";
+      renderStats();
+    }
+
+    function endGame(win) {
+      document.body.classList.add("game-over-effect");
+      if (win) {
+        localStorage.setItem("cert_poetry", "true");
+        localStorage.setItem("cert_power", "true");
+      }
+      let title = win ? "大唐未來編碼局正式策劃師" : "待重啟的編碼實習生";
+      if (win && state.brain >= 90 && state.shield <= 0) title = "大唐時空總設計師．智慧超腦";
+      else if (win && state.scanUses >= 3) title = "洞察人心的情境分析專家";
+      else if (state.chips > 200) title = "編碼局第一科技富豪";
+      els.endText.textContent = win
+        ? `任務完成！你成功通過未來編碼局考驗。職稱：【${title}】。大腦開發度：${state.brain}%，能量核心：${Math.max(state.cores, 0)}，編碼晶片：${state.chips}。`
+        : `系統暫時當機，AI-Alpha 還在等待你重新挑戰。職稱：【${title}】。大腦開發度：${state.brain}%，編碼晶片：${state.chips}。`;
+      els.endModal.classList.add("show");
+    }
+
+    function restart() {
+      document.body.classList.remove("game-over-effect", "success-flash", "alarm-flash", "shop-flash", "boss-flash");
+      state = freshState();
+      els.shopModal.classList.remove("show");
+      els.endModal.classList.remove("show");
+      loadQuestion();
+    }
+
+    document.addEventListener("keydown", event => {
+      const key = event.key.toUpperCase();
+      if (!["A", "B", "C", "D"].includes(key) || state.answered) return;
+      const button = document.querySelectorAll(".answer")[["A", "B", "C", "D"].indexOf(key)];
+      if (button && !button.classList.contains("hide")) button.click();
+    });
+    els.startBtn.addEventListener("click", () => els.startModal.classList.remove("show"));
+    els.nextBtn.addEventListener("click", nextQuestion);
+    els.restartBtn.addEventListener("click", restart);
+    els.endRestartBtn.addEventListener("click", restart);
+    els.scanBtn.addEventListener("click", useScan);
+    els.noiseBtn.addEventListener("click", useNoise);
+    els.leaveShopBtn.addEventListener("click", () => {
+      els.shopModal.classList.remove("show");
+      loadQuestion();
+    });
+    document.querySelectorAll("[data-buy]").forEach(button => button.addEventListener("click", () => buy(button.dataset.buy)));
+
+    (function initVoiceReader() {
+      const button = document.getElementById("voiceToggle");
+      if (!button) return;
+      let enabled = localStorage.getItem("poetry_voice_enabled") === "true";
+      let timer = 0;
+
+      function updateButton() {
+        button.classList.toggle("on", enabled);
+        button.textContent = enabled ? "🔇 關閉語音" : "🔊 開啟語音";
+      }
+
+      function clean(text) {
+        return (text || "")
+          .replace(/[🔊🔇✓🎴📝⚔️🏆🔒←]/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      function speak(text) {
+        if (!enabled || !("speechSynthesis" in window)) return;
+        const message = clean(text);
+        if (!message) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.lang = "zh-TW";
+        utterance.rate = 0.92;
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function currentQuestionText() {
+        const parts = [];
+        ["levelBadge", "meta", "question"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) parts.push(el.textContent);
+        });
+        const options = Array.from(document.querySelectorAll(".answer:not(.hide)"))
+          .map(button => button.textContent.trim());
+        if (options.length) parts.push(`選項：${options.join("。")}`);
+        return parts.join("。");
+      }
+
+      function queueSpeak(text) {
+        clearTimeout(timer);
+        timer = setTimeout(() => speak(text), 180);
+      }
+
+      button.addEventListener("click", () => {
+        if (!("speechSynthesis" in window)) {
+          alert("這個瀏覽器不支援語音朗讀功能。");
+          return;
+        }
+        enabled = !enabled;
+        localStorage.setItem("poetry_voice_enabled", String(enabled));
+        if (!enabled) window.speechSynthesis.cancel();
+        updateButton();
+        if (enabled) speak(currentQuestionText());
+      });
+
+      ["question", "feedback", "shopIntro", "endText"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        new MutationObserver(() => {
+          queueSpeak(id === "question" ? currentQuestionText() : el.textContent);
+        }).observe(el, { childList: true, characterData: true, subtree: true });
+      });
+
+      updateButton();
+    })();
+
+    restart();
+  </script>
+</body>
+</html>

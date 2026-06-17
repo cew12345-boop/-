@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>大唐心靈讀心師——唐詩情感解密大冒險</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --ink: #241914;
+      --paper: #fff7e8;
+      --rose: #d9506f;
+      --gold: #f2b544;
+      --teal: #1f947e;
+      --blue: #2f6eaa;
+      --violet: #64459c;
+      --line: rgba(54, 34, 18, 0.18);
+      --shadow: rgba(10, 8, 15, 0.28);
+    }
+    html, body { min-height: 100%; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Noto Sans TC", "Microsoft JhengHei", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 14% 12%, rgba(242, 181, 68, 0.34), transparent 17rem),
+        radial-gradient(circle at 82% 10%, rgba(217, 80, 111, 0.28), transparent 18rem),
+        linear-gradient(135deg, #15304d 0%, #281b4a 54%, #442017 100%);
+      min-height: 100vh;
+    }
+    button { color: inherit; font: inherit; }
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+    .topbar {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 14px;
+      align-items: center;
+      color: #fff7e8;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.65rem, 4vw, 3.25rem);
+      line-height: 1.06;
+      letter-spacing: 0;
+      text-shadow: 0 3px 0 rgba(28, 18, 12, 0.62), 0 16px 30px rgba(0, 0, 0, 0.34);
+    }
+    .subtitle {
+      margin: 6px 0 0;
+      color: rgba(255, 247, 232, 0.88);
+      font-weight: 900;
+    }
+    .stats {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: end;
+    }
+    .stat {
+      min-width: 104px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255, 247, 232, 0.18);
+      border-radius: 8px;
+      color: #fff7e8;
+      background: rgba(8, 14, 28, 0.6);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+      font-weight: 950;
+      text-align: center;
+    }
+    .stage {
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 14px;
+    }
+    .main, .side {
+      border: 1px solid rgba(255, 236, 192, 0.2);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 22px 60px rgba(0, 0, 0, 0.25);
+    }
+    .main {
+      min-height: 660px;
+      display: grid;
+      grid-template-rows: 248px 1fr;
+      background: var(--paper);
+    }
+    .art {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, rgba(15, 21, 40, 0.03), rgba(15, 21, 40, 0.46)),
+        linear-gradient(135deg, #89d6df 0%, #ffe19a 46%, #be6d62 100%);
+    }
+    .moon {
+      position: absolute;
+      width: 96px;
+      height: 96px;
+      right: 62px;
+      top: 34px;
+      border-radius: 999px;
+      background: #fff2b2;
+      box-shadow: 0 0 44px rgba(255, 238, 146, 0.92);
+    }
+    .heart {
+      position: absolute;
+      left: 12%;
+      bottom: 42px;
+      width: 150px;
+      height: 132px;
+      transform: rotate(-8deg);
+      filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.22));
+      animation: beat 1.8s ease-in-out infinite;
+    }
+    .heart::before, .heart::after {
+      content: "";
+      position: absolute;
+      width: 84px;
+      height: 126px;
+      border-radius: 84px 84px 0 0;
+      background: linear-gradient(160deg, #ff7a94, #c43562);
+    }
+    .heart::before { left: 74px; transform: rotate(-45deg); transform-origin: 0 100%; }
+    .heart::after { left: 0; transform: rotate(45deg); transform-origin: 100% 100%; }
+    .poet {
+      position: absolute;
+      left: 39%;
+      bottom: 18px;
+      width: 150px;
+      height: 184px;
+    }
+    .poet::before {
+      content: "";
+      position: absolute;
+      left: 44px;
+      top: 4px;
+      width: 64px;
+      height: 64px;
+      border-radius: 999px;
+      background: #ffe0b8;
+      box-shadow: inset 0 -8px 0 rgba(122, 72, 38, 0.12);
+    }
+    .poet::after {
+      content: "";
+      position: absolute;
+      left: 20px;
+      bottom: 0;
+      width: 112px;
+      height: 130px;
+      border-radius: 42px 42px 8px 8px;
+      background: linear-gradient(160deg, #f8ecd0, #6b4aa0);
+      clip-path: polygon(20% 0, 80% 0, 100% 100%, 0 100%);
+    }
+    .monster {
+      position: absolute;
+      right: 12%;
+      bottom: 28px;
+      width: 132px;
+      height: 150px;
+      border-radius: 48% 52% 44% 56%;
+      background:
+        radial-gradient(circle at 36% 38%, #fff 0 7%, transparent 8%),
+        radial-gradient(circle at 64% 38%, #fff 0 7%, transparent 8%),
+        radial-gradient(circle at 36% 39%, #15141d 0 3%, transparent 4%),
+        radial-gradient(circle at 64% 39%, #15141d 0 3%, transparent 4%),
+        linear-gradient(160deg, #71717a, #1f2937);
+      box-shadow: 0 0 32px rgba(150, 150, 165, 0.7);
+      animation: shake 2.4s ease-in-out infinite;
+    }
+    .sparkles {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 24% 24%, #fffbe7 0 3px, transparent 4px),
+        radial-gradient(circle at 47% 27%, #fffbe7 0 2px, transparent 3px),
+        radial-gradient(circle at 68% 18%, #fffbe7 0 3px, transparent 4px),
+        radial-gradient(circle at 83% 62%, #fffbe7 0 2px, transparent 3px);
+    }
+    .content {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+      padding: 18px;
+    }
+    .badge {
+      width: fit-content;
+      padding: 8px 12px;
+      border-radius: 999px;
+      color: #fff7e8;
+      background: var(--violet);
+      font-weight: 950;
+    }
+    .story {
+      margin: 0;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff0c8;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+    .meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: rgba(36, 25, 20, 0.72);
+      font-weight: 900;
+    }
+    .question {
+      margin: 0;
+      font-size: clamp(1.45rem, 3vw, 2.2rem);
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+    .quote {
+      display: block;
+      margin-top: 8px;
+      color: #7c2d3f;
+    }
+    .answers {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .answer {
+      min-height: 76px;
+      display: grid;
+      grid-template-columns: 38px 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 2px solid rgba(42, 30, 18, 0.16);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(217, 80, 111, 0.12), rgba(255, 250, 241, 0.92)),
+        #fffaf1;
+      cursor: pointer;
+      font-weight: 950;
+      text-align: left;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: inset 0 0 18px rgba(217, 80, 111, 0.1), 0 0 18px rgba(217, 80, 111, 0.08);
+    }
+    .answer:hover:not(:disabled), .answer:focus-visible {
+      transform: translateY(-2px);
+      border-color: rgba(217, 80, 111, 0.78);
+      box-shadow: 0 10px 22px rgba(217, 80, 111, 0.15);
+      outline: none;
+    }
+    .answer:disabled { cursor: default; opacity: 0.7; }
+    .answer.hide { visibility: hidden; }
+    body.success-flash::before,
+    body.alarm-flash::before,
+    body.shop-flash::before,
+    body.boss-flash::before,
+    body.game-over-effect::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 18;
+      pointer-events: none;
+    }
+    body.success-flash::before {
+      background: radial-gradient(circle, rgba(255, 221, 103, 0.72), transparent 62%);
+      animation: flashOut 0.62s ease forwards;
+    }
+    body.alarm-flash::before {
+      background: rgba(217, 80, 111, 0.3);
+      animation: alarmBlink 0.48s linear 2 forwards;
+    }
+    body.shop-flash::before {
+      background: radial-gradient(circle at 50% 55%, rgba(115, 213, 225, 0.34), transparent 56%);
+      animation: flashOut 0.85s ease forwards;
+    }
+    body.boss-flash::before {
+      background: linear-gradient(180deg, rgba(0,0,0,0.72) 0 11%, transparent 11% 89%, rgba(0,0,0,0.72) 89% 100%), rgba(217, 80, 111, 0.16);
+      animation: alarmBlink 0.6s linear 2 forwards;
+    }
+    body.game-over-effect .app {
+      animation: gameOverShake 0.3s linear, slowFade 1.35s ease 0.3s forwards;
+    }
+    .key {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      color: #fff7e8;
+      background: var(--blue);
+    }
+    .feedback {
+      min-height: 84px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #f8ead8;
+      font-weight: 900;
+      line-height: 1.55;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .primary, .ghost, .tool {
+      min-height: 44px;
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 950;
+    }
+    .primary { color: #fff7e8; background: var(--teal); }
+    .ghost { color: #fff7e8; background: #574187; }
+    .tool { color: var(--ink); background: #ffd665; }
+    .primary:disabled, .ghost:disabled, .tool:disabled { opacity: 0.48; cursor: not-allowed; }
+    .side {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      background: rgba(255, 247, 232, 0.96);
+    }
+    .panel {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+    }
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 1.06rem;
+      letter-spacing: 0;
+    }
+    .bar {
+      height: 18px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(36, 25, 20, 0.14);
+    }
+    .energyfill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #42bd91, #58a6e0);
+      transition: width 0.22s ease;
+    }
+    .bossfill {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #ffd35f, #d9506f);
+      transition: width 0.22s ease;
+    }
+    .map {
+      display: grid;
+      gap: 8px;
+    }
+    .place {
+      padding: 9px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #fffaf1;
+      color: rgba(36, 25, 20, 0.56);
+      font-weight: 900;
+    }
+    .place.unlock {
+      color: #fff7e8;
+      background: #1f725f;
+      border-color: transparent;
+    }
+    .crystals {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .crystal {
+      padding: 8px 10px;
+      border-radius: 999px;
+      color: #fff7e8;
+      background: #8d3f73;
+      font-weight: 950;
+    }
+    .empty { color: rgba(36, 25, 20, 0.58); font-weight: 850; }
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      place-items: center;
+      padding: 18px;
+      background: rgba(7, 9, 16, 0.72);
+    }
+    .modal.show { display: grid; }
+    .dialog {
+      width: min(600px, 100%);
+      padding: 20px;
+      border-radius: 8px;
+      background: #fff7e8;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
+    }
+    .dialog h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.55rem, 5vw, 2.35rem);
+      letter-spacing: 0;
+    }
+    .dialog p {
+      margin: 0 0 14px;
+      line-height: 1.65;
+      font-weight: 850;
+    }
+    .shop-list {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0;
+    }
+    .shop-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff0c8;
+    }
+    .shop-item strong { display: block; margin-bottom: 4px; }
+    @keyframes beat {
+      0%, 100% { transform: rotate(-8deg) scale(1); }
+      50% { transform: rotate(-8deg) scale(1.08); }
+    }
+    @keyframes flashOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    @keyframes alarmBlink {
+      0%, 100% { opacity: 0; }
+      20%, 70% { opacity: 1; }
+    }
+    @keyframes gameOverShake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-10px, 4px); }
+      40% { transform: translate(9px, -5px); }
+      60% { transform: translate(-7px, -3px); }
+      80% { transform: translate(6px, 4px); }
+    }
+    @keyframes slowFade {
+      to { opacity: 0.18; filter: blur(2px) saturate(0.7); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: rotate(-3deg); }
+      50% { transform: rotate(4deg); }
+    }
+    @media (max-width: 920px) {
+      .topbar, .stage { grid-template-columns: 1fr; }
+      .stats { justify-content: start; }
+      .main { min-height: auto; grid-template-rows: 210px 1fr; }
+      .side { grid-template-rows: auto; }
+    }
+    @media (max-width: 640px) {
+      .app { padding: 10px; }
+      .answers { grid-template-columns: 1fr; }
+      .heart { left: 6%; width: 112px; height: 100px; }
+      .poet { left: 35%; transform: scale(0.82); transform-origin: bottom center; }
+      .monster { right: 4%; width: 104px; height: 124px; }
+    }
+
+    .map-back {
+      position: fixed;
+      left: 14px;
+      top: 14px;
+      z-index: 40;
+      min-height: 40px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      color: #fff7e8;
+      background: rgba(8, 13, 25, 0.76);
+      border: 1px solid rgba(255, 247, 232, 0.2);
+      text-decoration: none;
+      font-weight: 950;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .voice-toggle {
+      position: fixed;
+      right: 14px;
+      top: 14px;
+      z-index: 40;
+      min-height: 40px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255, 247, 232, 0.2);
+      border-radius: 8px;
+      color: #fff7e8;
+      background: rgba(8, 13, 25, 0.76);
+      cursor: pointer;
+      font-weight: 950;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .voice-toggle.on {
+      color: #122018;
+      background: #9af2bd;
+    }
+  </style>
+</head>
+<body>
+  <a class="map-back" href="../index.html">← 回到大地圖</a>
+  <button class="voice-toggle" id="voiceToggle" type="button">🔊 開啟語音</button>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>大唐心靈讀心師——唐詩情感解密大冒險</h1>
+        <p class="subtitle">讀懂詩人的喜、怒、哀、樂、思，拯救大唐靈魂！</p>
+      </div>
+      <div class="stats" aria-live="polite">
+        <div class="stat" id="energyStat">共情 100</div>
+        <div class="stat" id="coinStat">心靈幣 0</div>
+        <div class="stat" id="qStat">第 51 題</div>
+      </div>
+    </header>
+
+    <section class="stage">
+      <section class="main" aria-label="唐詩情感解密遊戲區">
+        <div class="art" aria-hidden="true">
+          <div class="moon"></div>
+          <div class="heart"></div>
+          <div class="poet"></div>
+          <div class="monster"></div>
+          <div class="sparkles"></div>
+        </div>
+        <div class="content">
+          <span class="badge" id="levelBadge">第 1 關：基礎心靈解密</span>
+          <p class="story" id="storyText">警告！時空亂流來襲，唐朝詩人陷入了「情感混亂風暴」。你是全宇宙唯一的心靈讀心師，請透過詩句猜中他們心裡真正的情感！</p>
+          <div class="meta" id="meta"></div>
+          <h2 class="question" id="question"></h2>
+          <div class="answers" id="answers"></div>
+          <div class="feedback" id="feedback">心靈電波已連線。請選 A、B、C 或 D，解開第一顆情感結晶！</div>
+          <div class="controls">
+            <button class="primary" id="nextBtn" type="button" disabled>下一題</button>
+            <button class="tool" id="storyBtn" type="button">使用萬花筒</button>
+            <button class="tool" id="forgetBtn" type="button">使用忘憂草</button>
+            <button class="ghost" id="restartBtn" type="button">重新開始</button>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side" aria-label="冒險狀態">
+        <div class="panel">
+          <h3>共情能量 <span id="energyText">100/100</span></h3>
+          <div class="bar"><div class="energyfill" id="energyFill"></div></div>
+        </div>
+        <div class="panel">
+          <h3>冷酷石化怪 HP <span id="bossText">150/150</span></h3>
+          <div class="bar"><div class="bossfill" id="bossFill"></div></div>
+        </div>
+        <div class="panel">
+          <h3>心靈關卡</h3>
+          <div class="map" id="map"></div>
+        </div>
+        <div class="panel">
+          <h3>情感結晶</h3>
+          <div class="crystals" id="crystals"><span class="empty">還沒有結晶，先讀懂第一位詩人！</span></div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="modal show" id="startModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>心靈讀心師，請連線！</h2>
+      <p>李白搞不懂自己為什麼想哭，杜甫也忘記自己為什麼激動。你有 100 點共情能量與 0 枚心靈幣。答對得 10 幣，答錯扣 20 能量。第 71 題開始進入 Boss 戰，擊敗冷酷石化怪！</p>
+      <button class="primary" id="startBtn" type="button">開始讀心冒險</button>
+    </div>
+  </div>
+
+  <div class="modal" id="shopModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>心靈道具商店</h2>
+      <p id="shopIntro">店主溫柔地說：「讀懂詩人不容易，要不要帶點心靈道具？」</p>
+      <div class="shop-list">
+        <div class="shop-item">
+          <div><strong>讀心術萬花筒 20 心靈幣</strong>提供詩句白話文故事與背景。</div>
+          <button class="tool" data-buy="story" type="button">購買</button>
+        </div>
+        <div class="shop-item">
+          <div><strong>忘憂草 30 心靈幣</strong>刪除一個最不可能的情感干擾選項。</div>
+          <button class="tool" data-buy="forget" type="button">購買</button>
+        </div>
+        <div class="shop-item">
+          <div><strong>護心鏡 40 心靈幣</strong>下一題答錯，共情能量只扣 5 點。</div>
+          <button class="tool" data-buy="shield" type="button">購買</button>
+        </div>
+        <div class="shop-item" id="reviveRow">
+          <div><strong>心靈重連 30 心靈幣</strong>能量歸零時恢復 40 點共情能量。</div>
+          <button class="tool" data-buy="revive" type="button">購買</button>
+        </div>
+      </div>
+      <button class="primary" id="leaveShopBtn" type="button">離開商店</button>
+    </div>
+  </div>
+
+  <div class="modal" id="endModal" role="dialog" aria-modal="true">
+    <div class="dialog">
+      <h2>Game Over</h2>
+      <p id="endText"></p>
+      <button class="primary" id="endRestartBtn" type="button">重新開始</button>
+    </div>
+  </div>
+
+  <script>
+    const levels = [
+      "第 1 關：基礎心靈解密",
+      "第 2 關：月光與故鄉",
+      "第 3 關：離別與祝福",
+      "第 4 關：壯志與感嘆",
+      "第 5 關：終極意境大車拼 Boss 戰",
+      "第 6 關：詩心對決 Boss 戰",
+      "第 7 關：冷酷石化怪最終戰"
+    ];
+    const questions = [
+      ["51", "李白看到「舉頭望明月，低頭思故鄉」時，心裡最強烈的是什麼？", "思鄉之情", "得意歡樂", "生氣抱怨", "悠閒玩耍", "李白夜晚看見月亮，想起遠方的家鄉，所以心裡充滿想家的感覺。", "李白", "靜夜思"],
+      ["52", "孟浩然寫「夜來風雨聲，花落知多少」，主要流露哪種心情？", "惜春與惋惜", "打仗的勇敢", "中獎的狂喜", "離家後的害怕", "春夜風雨過後，花可能落了很多，詩人帶著溫柔的惋惜。", "孟浩然", "春曉"],
+      ["53", "王之渙寫「欲窮千里目，更上一層樓」，最接近哪種情感？", "積極向上", "傷心絕望", "懶得努力", "害怕朋友", "想看更遠就要站更高，這是鼓勵自己進步的心情。", "王之渙", "登鸛雀樓"],
+      ["54", "李紳寫「誰知盤中餐，粒粒皆辛苦」，想喚起什麼情感？", "珍惜與感恩", "嘲笑農夫", "炫耀財富", "討厭吃飯", "詩人提醒大家每一粒米都來自辛苦勞動，要懂得珍惜。", "李紳", "憫農"],
+      ["55", "駱賓王寫「白毛浮綠水，紅掌撥清波」，情感最像什麼？", "童趣與喜愛", "孤獨悲傷", "憤怒抗議", "思念故鄉", "詩句像孩子觀察白鵝，充滿活潑可愛的喜愛。", "駱賓王", "詠鵝"],
+      ["56", "王維寫「空山不見人，但聞人語響」，帶給人什麼感受？", "幽靜空靈", "熱鬧吵雜", "憤怒焦急", "勝利狂歡", "山中看不見人，只聽見聲音，畫面安靜又深遠。", "王維", "鹿柴"],
+      ["57", "杜甫寫「好雨知時節，當春乃發生」，心情最接近？", "欣喜感恩", "厭煩雨天", "害怕雷聲", "想離開家", "春雨來得正是時候，詩人覺得驚喜又感謝。", "杜甫", "春夜喜雨"],
+      ["58", "王昌齡寫「秦時明月漢時關，萬里長征人未還」，情感重點是？", "邊塞思念與憂傷", "郊遊快樂", "春天賞花", "得到禮物", "邊關長久征戰，許多人不能回家，情感沉重。", "王昌齡", "出塞"],
+      ["59", "柳宗元寫「孤舟蓑笠翁，獨釣寒江雪」，最能感到什麼？", "孤獨清冷", "歡樂熱鬧", "貪吃滿足", "憤怒吵架", "雪中只有老翁獨自釣魚，呈現孤單寒冷的意境。", "柳宗元", "江雪"],
+      ["60", "賀知章寫「不知細葉誰裁出，二月春風似剪刀」，情感最像？", "驚喜讚嘆", "悲傷痛哭", "憤怒指責", "害怕自然", "詩人驚喜地讚美春風像剪刀，剪出柳葉。", "賀知章", "詠柳"],
+      ["61", "杜牧寫「停車坐愛楓林晚，霜葉紅於二月花」，最主要是？", "喜愛秋景", "討厭旅行", "思念母親", "戰爭恐懼", "詩人停車欣賞楓林，覺得秋葉比春花還美。", "杜牧", "山行"],
+      ["62", "李白寫「孤帆遠影碧空盡，唯見長江天際流」，情感最接近？", "送別不捨", "吃飽快樂", "考試緊張", "吵架生氣", "友人的船遠去，詩人一直望著，充滿不捨。", "李白", "黃鶴樓送孟浩然之廣陵"],
+      ["63", "杜甫寫「兩個黃鸝鳴翠柳，一行白鷺上青天」，心情偏向？", "明快愉悅", "陰沉害怕", "孤單絕望", "憤怒不平", "黃鸝、翠柳、白鷺、青天讓畫面明亮愉快。", "杜甫", "絕句"],
+      ["64", "王維寫「每逢佳節倍思親」，表達什麼情感？", "思念親人", "討厭節日", "驕傲炫耀", "想睡覺", "佳節時更想念遠方親人。", "王維", "九月九日憶山東兄弟"],
+      ["65", "白居易寫「野火燒不盡，春風吹又生」，情感象徵最像？", "堅韌希望", "完全放棄", "討厭小草", "害怕春風", "草被燒過仍會再生，象徵生命力和希望。", "白居易", "賦得古原草送別"],
+      ["66", "王勃寫「海內存知己，天涯若比鄰」，情感是？", "豁達友情", "冷漠無情", "驕傲自大", "害怕離別", "真正的朋友就算相隔很遠，也像在身邊。", "王勃", "送杜少府之任蜀州"],
+      ["67", "王翰寫「醉臥沙場君莫笑，古來征戰幾人回」，情感較接近？", "豪邁悲壯", "輕鬆逛街", "害羞撒嬌", "悠閒釣魚", "戰場飲酒看似豪邁，背後有戰爭殘酷的悲壯。", "王翰", "涼州詞"],
+      ["68", "岑參寫「忽如一夜春風來，千樹萬樹梨花開」，主要感覺是？", "驚奇壯美", "寂寞想家", "生氣不滿", "炎熱疲倦", "詩人把大雪比成梨花盛開，畫面奇妙壯麗。", "岑參", "白雪歌送武判官歸京"],
+      ["69", "劉禹錫寫「舊時王謝堂前燕，飛入尋常百姓家」，情感重點是？", "世事變遷的感慨", "貪玩開心", "害怕燕子", "想買房子", "從豪門到普通人家，詩人感嘆時代變化。", "劉禹錫", "烏衣巷"],
+      ["70", "李商隱寫「何當共剪西窗燭，卻話巴山夜雨時」，心情是？", "盼望重逢", "討厭聊天", "戰勝敵人", "看見春花", "詩人想像未來重逢，談起今日夜雨。", "李商隱", "夜雨寄北"],
+      ["71", "比較「低頭思故鄉」與「每逢佳節倍思親」，共同情感是？", "思念家人故鄉", "讚美春天", "邊塞戰意", "山水悠閒", "兩句都在遠方時想起家與親人。", "李白、王維", "比較題"],
+      ["72", "比較「海內存知己」與「孤帆遠影碧空盡」，都和什麼主題有關？", "友情與離別", "農夫辛苦", "秋天楓葉", "雪景驚奇", "兩首都和朋友分別有關，只是情緒一個豁達，一個不捨。", "王勃、李白", "比較題"],
+      ["73", "比較「好雨知時節」與「春風吹又生」，共同帶來什麼感覺？", "生命與希望", "悲壯戰場", "深夜孤獨", "怒氣爆發", "春雨和春風都讓萬物生長，帶來希望。", "杜甫、白居易", "比較題"],
+      ["74", "「千山鳥飛絕」和「空山不見人」都營造哪種意境？", "安靜幽深", "熱鬧市集", "節日狂歡", "戰場衝鋒", "兩句都讓人感覺山中人少、聲音少，十分幽靜。", "柳宗元、王維", "比較題"],
+      ["75", "「霜葉紅於二月花」和「千樹萬樹梨花開」都善用什麼？", "美麗比喻與想像", "直接罵人", "數學計算", "命令口氣", "楓葉像花，雪像梨花，都是用想像讓景色更美。", "杜牧、岑參", "比較題"],
+      ["76", "「古來征戰幾人回」與「萬里長征人未還」共同情感是？", "戰爭悲傷", "讀書快樂", "春遊興奮", "吃飯感恩", "兩句都寫戰爭讓人難以回家，帶有沉重感。", "王翰、王昌齡", "比較題"],
+      ["77", "「粒粒皆辛苦」與「報得三春暉」都提醒我們？", "感恩珍惜", "快速奔跑", "討厭自然", "害怕月亮", "一個感謝農夫，一個感謝母愛，都要懂得珍惜。", "李紳、孟郊", "比較題"],
+      ["78", "哪一組情感最適合「明月」在唐詩中常出現的作用？", "思念與牽掛", "暴怒與吵架", "貪吃與滿足", "炫耀與驕傲", "明月常讓詩人想到遠方的人和故鄉。", "多位詩人", "意象題"],
+      ["79", "「紅掌撥清波」和「兩個黃鸝鳴翠柳」共同感覺是？", "活潑生動", "孤寂寒冷", "悲壯沉重", "憤怒激烈", "動物在水邊或樹上活動，畫面很有生命力。", "駱賓王、杜甫", "比較題"],
+      ["80", "「欲窮千里目，更上一層樓」和「會當凌絕頂」共同精神是？", "向上追求", "逃避挑戰", "懶散休息", "傷心退縮", "兩句都鼓勵人站得更高、看得更遠。", "王之渙、杜甫", "比較題"],
+      ["81", "Boss 題：「夜半鐘聲到客船」最能加深哪種心境？", "旅人孤愁", "勝利狂歡", "母愛溫暖", "春天喜悅", "夜晚鐘聲傳來，讓旅人的孤單愁緒更深。", "張繼", "楓橋夜泊"],
+      ["82", "Boss 題：「一片冰心在玉壺」表達詩人希望朋友相信什麼？", "自己清白真誠", "自己非常生氣", "自己想睡覺", "自己很貪玩", "冰心玉壺象徵純潔清白。", "王昌齡", "芙蓉樓送辛漸"],
+      ["83", "Boss 題：「不破樓蘭終不還」最強烈的情感是？", "堅決壯志", "溫柔想家", "賞花悠閒", "害怕退縮", "將士立下決心，不打敗敵人不回家。", "王昌齡", "從軍行"],
+      ["84", "Boss 題：「春色滿園關不住，一枝紅杏出牆來」象徵什麼？", "生命活力擋不住", "完全沒有希望", "戰爭很殘酷", "朋友要離開", "春天的生命力旺盛，連牆也擋不住。", "葉紹翁", "遊園不值"],
+      ["85", "Boss 題：如果一首詩同時有月亮、遠方、獨自一人，最可能的情感是？", "思念與孤單", "熱鬧與狂歡", "憤怒與責罵", "驕傲與炫耀", "月亮、遠方、孤身常組合成想念和孤獨的意境。", "綜合判斷", "意境題"]
+    ].map(row => ({
+      no: row[0],
+      question: row[1],
+      answer: row[2],
+      options: row.slice(2, 6),
+      story: row[6],
+      poet: row[7],
+      poem: row[8]
+    }));
+
+    const els = {
+      energyStat: document.getElementById("energyStat"),
+      coinStat: document.getElementById("coinStat"),
+      qStat: document.getElementById("qStat"),
+      levelBadge: document.getElementById("levelBadge"),
+      storyText: document.getElementById("storyText"),
+      meta: document.getElementById("meta"),
+      question: document.getElementById("question"),
+      answers: document.getElementById("answers"),
+      feedback: document.getElementById("feedback"),
+      nextBtn: document.getElementById("nextBtn"),
+      storyBtn: document.getElementById("storyBtn"),
+      forgetBtn: document.getElementById("forgetBtn"),
+      restartBtn: document.getElementById("restartBtn"),
+      energyText: document.getElementById("energyText"),
+      energyFill: document.getElementById("energyFill"),
+      bossText: document.getElementById("bossText"),
+      bossFill: document.getElementById("bossFill"),
+      map: document.getElementById("map"),
+      crystals: document.getElementById("crystals"),
+      startModal: document.getElementById("startModal"),
+      startBtn: document.getElementById("startBtn"),
+      shopModal: document.getElementById("shopModal"),
+      shopIntro: document.getElementById("shopIntro"),
+      reviveRow: document.getElementById("reviveRow"),
+      leaveShopBtn: document.getElementById("leaveShopBtn"),
+      endModal: document.getElementById("endModal"),
+      endText: document.getElementById("endText"),
+      endRestartBtn: document.getElementById("endRestartBtn")
+    };
+
+    let state;
+
+    function freshState() {
+      return {
+        index: 0,
+        energy: 100,
+        coins: 0,
+        bossHp: 150,
+        answered: false,
+        wrong: 0,
+        storyTools: 0,
+        forgetTools: 0,
+        shields: 0,
+        kaleidoscopeBought: 0,
+        usedForget: false,
+        crystals: []
+      };
+    }
+
+    function shuffle(items) {
+      const copy = [...items];
+      for (let i = copy.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function levelIndex() {
+      return Math.floor(state.index / 5);
+    }
+
+    function pulseEffect(name) {
+      document.body.classList.remove("success-flash", "alarm-flash", "shop-flash", "boss-flash");
+      void document.body.offsetWidth;
+      document.body.classList.add(name);
+      setTimeout(() => document.body.classList.remove(name), 900);
+    }
+
+    function renderStats() {
+      els.energyStat.textContent = `共情 ${Math.max(state.energy, 0)}`;
+      els.coinStat.textContent = `心靈幣 ${state.coins}`;
+      els.qStat.textContent = state.index < questions.length ? `第 ${questions[state.index].no} 題` : "通關";
+      els.energyText.textContent = `${Math.max(state.energy, 0)}/100`;
+      els.energyFill.style.width = `${Math.max(state.energy, 0)}%`;
+      els.bossText.textContent = `${Math.max(state.bossHp, 0)}/150`;
+      els.bossFill.style.width = `${Math.max(state.bossHp, 0) / 150 * 100}%`;
+      els.storyBtn.textContent = `使用萬花筒 x${state.storyTools}`;
+      els.forgetBtn.textContent = `使用忘憂草 x${state.forgetTools}`;
+      els.storyBtn.disabled = state.storyTools <= 0 || state.answered;
+      els.forgetBtn.disabled = state.forgetTools <= 0 || state.answered || state.usedForget;
+      renderMap();
+      renderCrystals();
+    }
+
+    function renderMap() {
+      const unlocked = Math.min(7, Math.floor(state.index / 5));
+      els.map.innerHTML = levels.map((name, i) => {
+        const active = i < unlocked || (i === levelIndex() && state.index < questions.length);
+        return `<div class="place ${active ? "unlock" : ""}">${active ? "已解鎖 " : "未解鎖 "}${name}</div>`;
+      }).join("");
+    }
+
+    function renderCrystals() {
+      if (state.crystals.length === 0) {
+        els.crystals.innerHTML = `<span class="empty">還沒有結晶，先讀懂第一位詩人！</span>`;
+        return;
+      }
+      els.crystals.innerHTML = state.crystals.slice(-16).map(item => `<span class="crystal">${item}</span>`).join("");
+    }
+
+    function loadQuestion() {
+      state.answered = false;
+      state.usedForget = false;
+      els.nextBtn.disabled = true;
+      const q = questions[state.index];
+      const boss = state.index >= 20;
+      if (state.index === 20) pulseEffect("boss-flash");
+      els.levelBadge.textContent = levels[levelIndex()];
+      els.storyText.textContent = boss
+        ? "[🔊 轟隆隆！重低音史詩級魔王BGM進場！] 螢幕上下出現電影級黑邊，冷酷石化怪巨大的像素雙眼在紅色風暴中睜開，綠色蜂巢防護罩發出脈衝光芒！"
+        : "詩人的心被情感混亂風暴包住了。請觀察詩句線索，選出最貼近的心情。";
+      els.meta.innerHTML = `<span>題號：${q.no}</span><span>詩人：${q.poet}</span><span>作品：${q.poem}</span>`;
+      els.question.innerHTML = `${q.question}`;
+      els.answers.innerHTML = "";
+      shuffle(q.options.map(text => ({ text, correct: text === q.answer }))).forEach((option, index) => {
+        const button = document.createElement("button");
+        button.className = "answer";
+        button.type = "button";
+        button.dataset.correct = option.correct ? "true" : "false";
+        button.innerHTML = `<span class="key">${["A", "B", "C", "D"][index]}</span><span>${option.text}</span>`;
+        button.addEventListener("click", () => answer(option.correct, q));
+        els.answers.appendChild(button);
+      });
+      els.feedback.textContent = "選項已經洗牌。請打開心靈雷達，找出詩人真正的情緒。";
+      renderStats();
+    }
+
+    function answer(correct, q) {
+      if (state.answered) return;
+      state.answered = true;
+      document.querySelectorAll(".answer").forEach(button => {
+        button.disabled = true;
+        if (button.dataset.correct === "true") {
+          button.style.borderColor = "rgba(31, 148, 126, 0.9)";
+          button.style.background = "#ddf7e7";
+        }
+      });
+      if (correct) {
+        pulseEffect("success-flash");
+        state.coins += 10;
+        state.crystals.push(q.answer);
+        let text = `[🔊 叮咚！鏘——！熱血古箏電音激昂響起！] 太厲害了！螢幕瞬間閃爍金色光芒，【${q.answer}】化作「3D立體水墨巨龍」與月光粒子盤旋衝出螢幕！你觸動了${q.poet}的心弦，${q.poet}感動地說：「沒錯！你真的懂我！」獲得 10 心靈幣！`;
+        if (state.index >= 20) {
+          state.bossHp -= 10;
+          text += " 冷酷石化怪被溫暖心光擊中，石化外殼「喀啦」裂開，HP 扣 10！";
+        }
+        els.feedback.textContent = text;
+      } else {
+        pulseEffect("alarm-flash");
+        state.wrong += 1;
+        let loss = 20;
+        if (state.shields > 0) {
+          state.shields -= 1;
+          loss = 5;
+        }
+        state.energy -= loss;
+        els.feedback.textContent = `[🔊 嗶嗶——！低沉警報鐘聲「咚——」地敲響，伴隨電子雜音。] 心靈電波產生干擾！錯誤情感字卡像玻璃 Shatter 碎裂，黑煙冒出「滋滋」電流火花。詩人搖搖頭，正確情感是【${q.answer}】。共情能量減少 ${loss}，深呼吸再連線！`;
+      }
+      renderStats();
+      if (state.bossHp <= 0) {
+        setTimeout(() => endGame(true), 450);
+        return;
+      }
+      if (state.energy <= 0) {
+        if (state.coins >= 30) openShop(true);
+        else setTimeout(() => endGame(false), 450);
+        return;
+      }
+      els.nextBtn.disabled = false;
+    }
+
+    function nextQuestion() {
+      state.index += 1;
+      if (state.index >= questions.length) {
+        endGame(true);
+        return;
+      }
+      if (state.index % 5 === 0) {
+        openShop(false);
+        return;
+      }
+      loadQuestion();
+    }
+
+    function openShop(reviveOnly) {
+      pulseEffect("shop-flash");
+      els.reviveRow.style.display = reviveOnly ? "grid" : "none";
+      els.shopIntro.textContent = reviveOnly
+        ? "[🔊 歡迎光臨！復古電子長安小曲響起] 心靈斷線了！霓虹招牌「長安補給站」浮現，店主拿出重連水晶：「30 心靈幣恢復 40 點共情能量。」"
+        : `[🔊 歡迎光臨！復古電子長安小曲響起] 你通過第 ${Math.floor(state.index / 5)} 關！霓虹招牌「長安補給站」浮現，道具卡片像抽卡遊戲一樣閃閃發光。`;
+      els.shopModal.classList.add("show");
+    }
+
+    function buy(kind) {
+      const price = { story: 20, forget: 30, shield: 40, revive: 30 }[kind];
+      if (state.coins < price) {
+        els.shopIntro.textContent = "店主輕聲提醒：「心靈幣不夠喔，再多解開幾顆情感結晶吧。」";
+        return;
+      }
+      state.coins -= price;
+      if (kind === "story") {
+        state.storyTools += 1;
+        state.kaleidoscopeBought += 1;
+        els.shopIntro.textContent = "讀心術萬花筒入袋！詩人的故事會變得更清楚。";
+      }
+      if (kind === "forget") {
+        state.forgetTools += 1;
+        els.shopIntro.textContent = "忘憂草入袋！最不像答案的情緒會被悄悄移開。";
+      }
+      if (kind === "shield") {
+        state.shields += 1;
+        els.shopIntro.textContent = "護心鏡入袋！下一次答錯只會輕輕扣 5 點能量。";
+      }
+      if (kind === "revive") {
+        state.energy = 40;
+        els.shopModal.classList.remove("show");
+        els.nextBtn.disabled = false;
+        els.feedback.textContent = "心靈重連成功！詩人的聲音又回到你的耳邊。";
+      }
+      renderStats();
+    }
+
+    function useStoryTool() {
+      if (state.storyTools <= 0 || state.answered) return;
+      state.storyTools -= 1;
+      els.feedback.textContent = `讀心術萬花筒展開故事：${questions[state.index].story}`;
+      renderStats();
+    }
+
+    function useForgetTool() {
+      if (state.forgetTools <= 0 || state.answered || state.usedForget) return;
+      const wrong = Array.from(document.querySelectorAll(".answer")).filter(button => button.dataset.correct !== "true" && !button.classList.contains("hide"));
+      const target = wrong[Math.floor(Math.random() * wrong.length)];
+      if (!target) return;
+      target.classList.add("hide");
+      state.forgetTools -= 1;
+      state.usedForget = true;
+      els.feedback.textContent = "忘憂草散出淡淡香氣，一個最不可能的情感干擾選項被移除了。";
+      renderStats();
+    }
+
+    function endGame(win) {
+      document.body.classList.add("game-over-effect");
+      if (win) localStorage.setItem("cert_warrior", "true");
+      let title = win ? "意境大師．時空拯救者" : "正在修行的心靈學徒";
+      if (win && state.energy >= 80) title = "大唐首席心靈導師．千古知音";
+      else if (state.kaleidoscopeBought >= 3) title = "最懂詩人故事的溫暖捕手";
+      else if (win && state.bossHp <= 0) title = "意境大師．時空拯救者";
+      els.endText.textContent = win
+        ? `你成功拯救大唐靈魂！稱號：【${title}】。剩餘共情能量：${Math.max(state.energy, 0)}，心靈幣：${state.coins}，情感結晶：${state.crystals.length} 顆。`
+        : `心靈電波暫時斷線了，但詩人們還在等你回來。稱號：【${title}】。心靈幣：${state.coins}，答錯：${state.wrong} 次。`;
+      els.endModal.classList.add("show");
+    }
+
+    function restart() {
+      document.body.classList.remove("game-over-effect", "success-flash", "alarm-flash", "shop-flash", "boss-flash");
+      state = freshState();
+      els.shopModal.classList.remove("show");
+      els.endModal.classList.remove("show");
+      loadQuestion();
+    }
+
+    document.addEventListener("keydown", event => {
+      const key = event.key.toUpperCase();
+      if (!["A", "B", "C", "D"].includes(key) || state.answered) return;
+      const button = document.querySelectorAll(".answer")[["A", "B", "C", "D"].indexOf(key)];
+      if (button && !button.classList.contains("hide")) button.click();
+    });
+    els.startBtn.addEventListener("click", () => els.startModal.classList.remove("show"));
+    els.nextBtn.addEventListener("click", nextQuestion);
+    els.restartBtn.addEventListener("click", restart);
+    els.endRestartBtn.addEventListener("click", restart);
+    els.storyBtn.addEventListener("click", useStoryTool);
+    els.forgetBtn.addEventListener("click", useForgetTool);
+    els.leaveShopBtn.addEventListener("click", () => {
+      els.shopModal.classList.remove("show");
+      loadQuestion();
+    });
+    document.querySelectorAll("[data-buy]").forEach(button => button.addEventListener("click", () => buy(button.dataset.buy)));
+
+    (function initVoiceReader() {
+      const button = document.getElementById("voiceToggle");
+      if (!button) return;
+      let enabled = localStorage.getItem("poetry_voice_enabled") === "true";
+      let timer = 0;
+
+      function updateButton() {
+        button.classList.toggle("on", enabled);
+        button.textContent = enabled ? "🔇 關閉語音" : "🔊 開啟語音";
+      }
+
+      function clean(text) {
+        return (text || "")
+          .replace(/[🔊🔇✓🎴📝⚔️🏆🔒←]/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+      }
+
+      function speak(text) {
+        if (!enabled || !("speechSynthesis" in window)) return;
+        const message = clean(text);
+        if (!message) return;
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(message);
+        utterance.lang = "zh-TW";
+        utterance.rate = 0.92;
+        window.speechSynthesis.speak(utterance);
+      }
+
+      function currentQuestionText() {
+        const parts = [];
+        ["levelBadge", "meta", "question"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) parts.push(el.textContent);
+        });
+        const options = Array.from(document.querySelectorAll(".answer:not(.hide)"))
+          .map(button => button.textContent.trim());
+        if (options.length) parts.push(`選項：${options.join("。")}`);
+        return parts.join("。");
+      }
+
+      function queueSpeak(text) {
+        clearTimeout(timer);
+        timer = setTimeout(() => speak(text), 180);
+      }
+
+      button.addEventListener("click", () => {
+        if (!("speechSynthesis" in window)) {
+          alert("這個瀏覽器不支援語音朗讀功能。");
+          return;
+        }
+        enabled = !enabled;
+        localStorage.setItem("poetry_voice_enabled", String(enabled));
+        if (!enabled) window.speechSynthesis.cancel();
+        updateButton();
+        if (enabled) speak(currentQuestionText());
+      });
+
+      ["question", "feedback", "shopIntro", "endText"].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        new MutationObserver(() => {
+          queueSpeak(id === "question" ? currentQuestionText() : el.textContent);
+        }).observe(el, { childList: true, characterData: true, subtree: true });
+      });
+
+      updateButton();
+    })();
+
+    restart();
+  </script>
+</body>
+</html>
