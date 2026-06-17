@@ -483,6 +483,7 @@
   <div class="cutscene" id="cutscene" aria-label="結局過場動畫">
     <img id="cutsceneImage" src="四印歸一.png" alt="">
     <video id="cutsceneVideo" muted playsinline loop preload="auto"></video>
+    <audio id="cutsceneMusic" src="music.mp3" preload="auto" loop></audio>
     <div class="cutscene-copy">
       <p class="cutscene-kicker" id="cutsceneKicker">《四印之後》</p>
       <h2 class="cutscene-title" id="cutsceneTitle">四印歸一</h2>
@@ -533,6 +534,7 @@
       cutscene: document.getElementById("cutscene"),
       cutsceneImage: document.getElementById("cutsceneImage"),
       cutsceneVideo: document.getElementById("cutsceneVideo"),
+      cutsceneMusic: document.getElementById("cutsceneMusic"),
       cutsceneTitle: document.getElementById("cutsceneTitle"),
       cutsceneText: document.getElementById("cutsceneText"),
       cutsceneHint: document.getElementById("cutsceneHint"),
@@ -556,6 +558,7 @@
     let audioGain = null;
     let musicNodes = null;
     let chimeTimer = 0;
+    let musicFadeTimer = 0;
     let narratorVoice = null;
 
     const cutscenes = [
@@ -623,19 +626,16 @@
     }
 
     function startEndingMusic() {
-      if (!window.AudioContext && !window.webkitAudioContext) return;
-      if (!audioCtx) {
-        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-        audioCtx = new AudioContextClass();
-        audioGain = audioCtx.createGain();
-        audioGain.gain.value = 0;
-        audioGain.connect(audioCtx.destination);
-      }
-      if (audioCtx.state === "suspended") audioCtx.resume();
-      if (!musicNodes) musicNodes = createInkMusic();
-      audioGain.gain.cancelScheduledValues(audioCtx.currentTime);
-      audioGain.gain.setTargetAtTime(0.08, audioCtx.currentTime, 1.6);
-      scheduleChimes();
+      const music = els.cutsceneMusic;
+      if (!music) return;
+      window.clearInterval(musicFadeTimer);
+      music.volume = 0;
+      music.currentTime = 0;
+      music.play().catch(() => {});
+      musicFadeTimer = window.setInterval(() => {
+        music.volume = Math.min(0.72, music.volume + 0.045);
+        if (music.volume >= 0.72) window.clearInterval(musicFadeTimer);
+      }, 120);
     }
 
     function createInkMusic() {
@@ -700,13 +700,17 @@
     }
 
     function fadeEndingMusic() {
-      if (!audioCtx || !audioGain) return;
-      audioGain.gain.cancelScheduledValues(audioCtx.currentTime);
-      audioGain.gain.setTargetAtTime(0, audioCtx.currentTime, 2.3);
-      if (chimeTimer) {
-        window.clearInterval(chimeTimer);
-        chimeTimer = 0;
-      }
+      const music = els.cutsceneMusic;
+      if (!music) return;
+      window.clearInterval(musicFadeTimer);
+      musicFadeTimer = window.setInterval(() => {
+        music.volume = Math.max(0, music.volume - 0.035);
+        if (music.volume <= 0.001) {
+          window.clearInterval(musicFadeTimer);
+          music.pause();
+          music.currentTime = 0;
+        }
+      }, 90);
     }
 
     function pickNarratorVoice() {
@@ -766,6 +770,7 @@
     function finishCutscene() {
       if (!pendingCutscene) return;
       stopNarration();
+      fadeEndingMusic();
       const action = pendingCutscene;
       pendingCutscene = null;
       els.cutscene.classList.add("fade");
